@@ -1,5 +1,3 @@
-version: 2
-
 workflows:
   version: 2
   build-deploy:
@@ -14,13 +12,13 @@ workflows:
       - deploy:
           requires:
             - integration-test
-          filter:
+          filters:
             branches:
               only: master
 
 
 
-
+version: 2
 jobs:
   unit-test:
     docker:
@@ -177,3 +175,4 @@ jobs:
             cf delete blueskygreenbuilds -f
             # Switch name of "dark" version to claim correct name
             cf rename blueskygreenbuilds-dark blueskygreenbuilds
+
