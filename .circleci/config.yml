@@ -4,19 +4,49 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - build
-      - deploy-heroku:
+      - unit-test
+      - integration-test:
           requires:
-            - build
-      - deploy-cf:
+            - unit-test
+      #- deploy-heroku:
+      #    requires:
+      #      - build
+      - deploy:
           requires:
-            - build
+            - integration-test
+          filter:
+            branches:
+              only: master
 
 
 
 
 jobs:
-  build:
+  unit-test:
+    docker:
+      - image: circleci/openjdk:8-jdk-browsers
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
+
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+           - ~/.m2
+          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
+      - run:
+          name: Build and *unit* test
+          command: |
+            mvn test -B  #run your tests
+
+      - store_test_results:
+          path: target/surefire-reports
+
+
+  integration-test:
     docker:
       - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo
@@ -44,8 +74,9 @@ jobs:
             wget --retry-connrefused --no-check-certificate -T 60 localhost:4445
 
       - run:
-          name: Build and test
+          name: Build and Integration test
           command: |
+            echo "{\"build_num\":\"${CIRCLE_JOB_NUM}\"}" > src/main/resources/static/build.json
             mvn package -B  #run your tests
             killall sc #kill saucelabs tunnel
 
@@ -54,56 +85,54 @@ jobs:
           command: |
             cp target/blueskygreenbuilds-*.jar /tmp/standalone-app.jar
             cp .circleci/setup-heroku.sh /tmp/setup-heroku.sh
-            cp src/main/resources/deployment/cf-dev-manifest.yml /tmp/
+            cp src/main/resources/deployment/cf-manifest.yml /tmp/
 
       - store_test_results:
-          path: target/surefire-reports
-
+          path: target/failsafe-reports
       - store_artifacts:
           path: /tmp/standalone-app.jar
       - store_artifacts:
-          path: /tmp/cf-dev-manifest.yml
-
+          path: /tmp/cf-manifest.yml
       - persist_to_workspace:
                 root: /tmp
                 paths:
                   - standalone-app.jar
                   - setup-heroku.sh
-                  - cf-dev-manifest.yml
+                  - cf-manifest.yml
 
-  deploy-heroku:
-    docker:
-      - image: circleci/openjdk:8-jdk-browsers
-    working_directory: ~/deploy
-    steps:
-      # why rebuild something we already tested, rebuilding invalidates any previous confidence?!
-      - attach_workspace:
-          at: /tmp
+#  deploy-heroku:
+#    docker:
+#      - image: circleci/openjdk:8-jdk-browsers
+#    working_directory: ~/deploy
+#    steps:
+#      # why rebuild something we already tested, rebuilding invalidates any previous confidence?!
+#      - attach_workspace:
+#          at: /tmp
+#
+#      - run:
+#          name: Run setup script
+#          command: bash /tmp/setup-heroku.sh
+#
+#      - run:
+#          name: Heroku Deploy
+#          command: |
+#            cp /tmp/standalone-app.jar .
+#            ls -la
+#            heroku plugins:install heroku-cli-deploy
+#            heroku plugins:install heroku-cli-deploy  # when debugging on circle image, first run succeeded, but did not make plugin available
+#            heroku deploy:jar standalone-app.jar --app $HEROKU_APP_NAME
+#      - run:
+#          name: Smoke Test
+#          command: |
+#            # Heroku deploy command will pass even if application crashes. Simple smoke test to make sure app is up.
+#            HTTPCODE=`curl -s -o /dev/null -w "%{http_code}" https://$HEROKU_APP_NAME.herokuapp.com`
+#            if [ "$HTTPCODE" -ne 200 ];then
+#              echo "heroku app not responding, failing deploy"
+#              exit 1
+#            fi
+#
 
-      - run:
-          name: Run setup script
-          command: bash /tmp/setup-heroku.sh
-
-      - run:
-          name: Heroku Deploy
-          command: |
-            cp /tmp/standalone-app.jar .
-            ls -la
-            heroku plugins:install heroku-cli-deploy
-            heroku plugins:install heroku-cli-deploy  # when debugging on circle image, first run succeeded, but did not make plugin available
-            heroku deploy:jar standalone-app.jar --app $HEROKU_APP_NAME
-      - run:
-          name: Smoke Test
-          command: |
-            # Heroku deploy command will pass even if application crashes. Simple smoke test to make sure app is up.
-            HTTPCODE=`curl -s -o /dev/null -w "%{http_code}" https://$HEROKU_APP_NAME.herokuapp.com`
-            if [ "$HTTPCODE" -ne 200 ];then
-              echo "heroku app not responding, failing deploy"
-              exit 1
-            fi
-
-
-  deploy-cf:
+  deploy:
     docker:
       - image: eddiewebb/queue-circleci-openjdk:8-jdk-browsers
       #- image: circleci/openjdk:8-jdk-browsers
@@ -129,11 +158,11 @@ jobs:
           command: |
             # Copy deployable jar and CF Manifest to current dir
             cp /tmp/standalone-app.jar .
-            cp /tmp/cf-dev-manifest.yml .
-            # Push as "dark" instance
-            cf push circleci-dark -f cf-dev-manifest.yml -p standalone-app.jar -n circleci-dark
+            cp /tmp/cf-manifest.yml .
+            # Push as "dark" instance (URL in manifest)
+            cf push -f cf-manifest.yml -p standalone-app.jar
             # Verify new version is working on dark URL.
-            HTTPCODE=`curl -s -o /dev/null -w "%{http_code}" https://circleci-dark.cfapps.io/`
+            HTTPCODE=`curl -s -o /dev/null -w "%{http_code}" http://dark.blueskygreenbuilds.com/`
             if [ "$HTTPCODE" -ne 200 ];then
               echo "dark route note available, failing deploy"
               exit 1

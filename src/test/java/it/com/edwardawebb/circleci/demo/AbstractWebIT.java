@@ -1,4 +1,4 @@
-package com.edwardawebb.circleci.demo;
+package it.com.edwardawebb.circleci.demo;
 
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
-public abstract class AbstractWebTests {
+public abstract class AbstractWebIT {
 
     @LocalServerPort
     private int port;

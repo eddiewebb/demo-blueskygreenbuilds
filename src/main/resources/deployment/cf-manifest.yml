@@ -1,0 +1,7 @@
+---
+applications:
+- name: blueskygreenbuilds
+  memory: 768M
+  instances: 1
+  routes:
+    - route: dark.blueskygreenbuilds.com #by default, deploy as dark route
