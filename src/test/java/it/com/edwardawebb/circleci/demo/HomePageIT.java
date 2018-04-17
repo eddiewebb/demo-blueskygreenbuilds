@@ -1,4 +1,4 @@
-package com.edwardawebb.circleci.demo;
+package it.com.edwardawebb.circleci.demo;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -9,7 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 
-public class HomePageTests extends AbstractWebTests{
+public class HomePageIT extends AbstractWebIT {
 
 
     @Test

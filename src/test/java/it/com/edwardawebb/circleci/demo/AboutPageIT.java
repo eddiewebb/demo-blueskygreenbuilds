@@ -1,4 +1,4 @@
-package com.edwardawebb.circleci.demo;
+package it.com.edwardawebb.circleci.demo;
 
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-public class AboutPageTests extends AbstractWebTests{
+public class AboutPageIT extends AbstractWebIT {
 
     @Test
     public void testAboutPageLoads() throws Exception {
