@@ -1,5 +1,7 @@
 ---
 applications:
-- name: circleci-challenge
+- name: blueskygreenbuilds
   memory: 768M
   instances: 1
+#  routes:
+#    - route: www.blueskygreenbuilds.com

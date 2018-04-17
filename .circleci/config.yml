@@ -1,4 +1,20 @@
 version: 2
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy-heroku:
+          requires:
+            - build
+      - deploy-cf:
+          requires:
+            - build
+
+
+
+
 jobs:
   build:
     docker:
@@ -7,14 +23,14 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: circleci-challenge-{{ checksum "pom.xml" }}
+          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
 
       - run: mvn dependency:go-offline
 
       - save_cache:
           paths:
            - ~/.m2
-          key: circleci-challenge-{{ checksum "pom.xml" }}
+          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
 
       - run:
           name: Start SauceLabs Tunnel (required if testing on CircleCI container)
@@ -36,7 +52,7 @@ jobs:
       - run:
           name: Copy deployment artifacts to workspace
           command: |
-            cp target/circleci-challenge-*.jar /tmp/standalone-app.jar
+            cp target/blueskygreenbuilds-*.jar /tmp/standalone-app.jar
             cp .circleci/setup-heroku.sh /tmp/setup-heroku.sh
             cp src/main/resources/deployment/cf-dev-manifest.yml /tmp/
 
@@ -106,7 +122,7 @@ jobs:
             cf -v
             cf api https://api.run.pivotal.io
             cf auth $CF_USER $CF_PASSWORD
-            cf target -o eddies-org -s development
+            cf target -o eddies-org -s circleci
 
       - run:
           name: CF Deploy
@@ -123,25 +139,12 @@ jobs:
               exit 1
             fi
             # Send "real" url to new version
-            cf map-route circleci-dark cfapps.io -n circleci-challenge
+            cf map-route blueskygreenbuilds-dark www.blueskygreenbuilds.com
             # Stop sending traffic to previous version
-            cf unmap-route circleci-challenge cfapps.io -n circleci-challenge
+            cf unmap-route blueskygreenbuilds www.blueskygreenbuilds.com
             # stop previous version
-            cf stop circleci-challenge
+            cf stop blueskygreenbuilds
             # delete previous version
-            cf delete circleci-challenge -f
+            cf delete blueskygreenbuilds -f
             # Switch name of "dark" version to claim correct name
-            cf rename circleci-dark circleci-challenge
-
-
-workflows:
-  version: 2
-  build-deploy:
-    jobs:
-      - build
-      - deploy-heroku:
-          requires:
-            - build
-      - deploy-cf:
-          requires:
-            - build
+            cf rename blueskygreenbuilds-dark blueskygreenbuilds
