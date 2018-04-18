@@ -6,8 +6,6 @@ workflows:
       - integration-test:
           requires:
             - unit-test
-
-      #master only flow
       - dark-deploy:
           requires:
             - integration-test
@@ -16,7 +14,8 @@ workflows:
               only: master
       - hold:
           type: approval
-          requires: dark-deploy
+          requires:
+            - dark-deploy
           filters:
             branches:
               only: master
