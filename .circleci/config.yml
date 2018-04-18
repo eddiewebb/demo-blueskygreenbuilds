@@ -142,7 +142,7 @@ jobs:
       - attach_workspace:
           at: /tmp
 
-      - run: queueBuildUntilFrontOfLine 5 #do not run parallel deployments
+      #- run: queueBuildUntilFrontOfLine 5 #do not run parallel deployments
       - run:
           name: Setup CF CLI
           command: |
