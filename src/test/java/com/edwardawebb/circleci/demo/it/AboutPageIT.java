@@ -1,4 +1,4 @@
-package it.com.edwardawebb.circleci.demo;
+package com.edwardawebb.circleci.demo.it;
 
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
