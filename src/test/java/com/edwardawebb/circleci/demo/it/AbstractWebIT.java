@@ -1,5 +1,6 @@
-package it.com.edwardawebb.circleci.demo;
+package com.edwardawebb.circleci.demo.it;
 
+import com.edwardawebb.circleci.demo.DemoApplication;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.LogType;
@@ -7,19 +8,13 @@ import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.net.InterfaceAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
-
-import static org.junit.Assert.assertNotNull;
 
 
 @RunWith(SpringRunner.class)

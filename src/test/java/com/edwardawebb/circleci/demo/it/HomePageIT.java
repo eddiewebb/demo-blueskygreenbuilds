@@ -1,9 +1,8 @@
-package it.com.edwardawebb.circleci.demo;
+package com.edwardawebb.circleci.demo.it;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
