@@ -77,7 +77,7 @@ jobs:
           name: Build and Integration test
           command: |
             echo "{\"build_num\":\"${CIRCLE_JOB_NUM}\"}" > src/main/resources/static/build.json
-            mvn package -B  #run your tests
+            mvn verify -B  #package and run your browser tests
             killall sc #kill saucelabs tunnel
 
       - run:
@@ -134,8 +134,8 @@ jobs:
 
   deploy:
     docker:
-      - image: eddiewebb/queue-circleci-openjdk:8-jdk-browsers
-      #- image: circleci/openjdk:8-jdk-browsers
+      #- image: eddiewebb/queue-circleci-openjdk:8-jdk-browsers
+      - image: circleci/openjdk:8-jdk
     working_directory: ~/deploy
     steps:
       # why rebuild something we already tested, rebuilding invalidates any previous confidence?!
