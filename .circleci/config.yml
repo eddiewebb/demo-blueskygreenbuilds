@@ -76,7 +76,7 @@ jobs:
       - run:
           name: Build and Integration test
           command: |
-            echo "{\"build_num\":\"${CIRCLE_JOB_NUM}\"}" > src/main/resources/static/build.json
+            echo "{\"build_num\":\"${CIRCLE_BUILD_NUM}\"}" > src/main/resources/static/build.json
             mvn verify -B  #package and run your browser tests
             killall sc #kill saucelabs tunnel
 
@@ -160,17 +160,16 @@ jobs:
             cp /tmp/standalone-app.jar .
             cp /tmp/cf-manifest.yml .
             # Push as "dark" instance (URL in manifest)
-            cf push -f cf-manifest.yml -p standalone-app.jar
+            cf push blueskygreenbuilds-dark -f cf-manifest.yml -p standalone-app.jar -n dark -d blueskygreenbuilds.com
             # Verify new version is working on dark URL.
             HTTPCODE=`curl -s -o /dev/null -w "%{http_code}" http://dark.blueskygreenbuilds.com/`
             if [ "$HTTPCODE" -ne 200 ];then
               echo "dark route note available, failing deploy"
               exit 1
             fi
-            sleep 30  # give time to demo dark URL being version ahead
             # Send "real" url to new version
             cf map-route blueskygreenbuilds-dark www.blueskygreenbuilds.com
-            sleep 30 # give time to demo round robin
+            sleep 15 # give time to demo round robin
             # Stop sending traffic to previous version
             cf unmap-route blueskygreenbuilds www.blueskygreenbuilds.com
             # stop previous version
