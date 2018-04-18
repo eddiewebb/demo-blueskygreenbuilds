@@ -86,7 +86,7 @@ jobs:
       - run:
           name: Build and Integration test
           command: |
-            mvn verify -B  #package and run your browser tests
+            mvn verify -B -Dspring.profiles.active=it  #package and run your browser tests
             killall sc #kill saucelabs tunnel
 
       - run:
