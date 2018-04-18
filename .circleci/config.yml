@@ -22,7 +22,7 @@ version: 2
 jobs:
   unit-test:
     docker:
-      - image: circleci/openjdk:8-jdk-browsers
+      - image: circleci/openjdk:8-jdk
     working_directory: ~/repo
     steps:
       - checkout
@@ -63,6 +63,8 @@ jobs:
       - run:
           name: Start SauceLabs Tunnel (required if testing on CircleCI container)
           command: |
+            : ${SAUCELABS_USER:?"Required Env Variable not found!"}
+            : ${SAUCELABS_KEY:?"Required Env Variable not found!"}
             curl https://saucelabs.com/downloads/sc-4.4.12-linux.tar.gz -o saucelabs.tar.gz
             tar -xzf saucelabs.tar.gz
             cd sc-*
@@ -132,7 +134,7 @@ jobs:
 
   deploy:
     docker:
-      - image: eddiewebb/queue-circleci-openjdk:8-jdk-browsers
+      - image: eddiewebb/queue-circleci-openjdk:8-jdk
       #- image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/deploy
     steps:
@@ -165,8 +167,10 @@ jobs:
               echo "dark route note available, failing deploy"
               exit 1
             fi
+            sleep 30  # give time to demo dark URL being version ahead
             # Send "real" url to new version
             cf map-route blueskygreenbuilds-dark www.blueskygreenbuilds.com
+            sleep 30 # give time to demo round robin
             # Stop sending traffic to previous version
             cf unmap-route blueskygreenbuilds www.blueskygreenbuilds.com
             # stop previous version

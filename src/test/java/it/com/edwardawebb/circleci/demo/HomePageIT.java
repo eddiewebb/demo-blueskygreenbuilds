@@ -13,25 +13,12 @@ public class HomePageIT extends AbstractWebIT {
 
 
     @Test
-    public void testHomePageLoads() throws Exception {
+    public void testHomePageButtonsUseProperMarketingCopy() throws Exception {
 
         WebDriver webDriver = createWebDriver();
         webDriver.get(getBaseUrl());
-        assertThat("Did not find welcome text",webDriver.findElement(By.id("welcome")).getText(),containsString("Hello Circle CI!"));
+        assertThat("Carousel Button 1 has incorrect text",webDriver.findElement(By.id("car-btn-1")).getText(),containsString("Request a Quote"));
     }
-
-    @Test
-    public void testButtonDisplaysInfoDialog() throws Exception {
-
-        WebDriver webDriver = createWebDriver();
-        webDriver.get(getBaseUrl());
-        WebElement infoDetails = webDriver.findElement(By.id("msgBox"));
-        WebElement infoButton = webDriver.findElement(By.id("msgButton"));
-        assertThat("Hidden element visible by default.", infoDetails.isDisplayed(),is(false));
-        infoButton.click();
-        assertThat("Additional info not displayed on button click.",infoDetails.isDisplayed(),is(true));
-    }
-
 
 
 }
