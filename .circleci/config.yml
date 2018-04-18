@@ -171,6 +171,8 @@ jobs:
             cf set-env blueskygreenbuilds-dark circle_build_num ${CIRCLE_BUILD_NUM}
             # Push as "dark" instance (URL in manifest)
             cf push blueskygreenbuilds-dark -f cf-manifest.yml -p standalone-app.jar -n dark -d blueskygreenbuilds.com
+            # Ensure dark route is exclusive to dark app
+            cf unmap-route blueskygreenbuilds blueskygreenbuilds.com -n dark || echo "Already exclusive"
             # Verify new version is working on dark URL.
             HTTPCODE=`curl -s -o /dev/null -w "%{http_code}" http://dark.blueskygreenbuilds.com/`
             if [ "$HTTPCODE" -ne 200 ];then
@@ -210,10 +212,10 @@ jobs:
               exit 1
             fi
             # Send "real" url to new version
-            cf map-route blueskygreenbuilds-dark www.blueskygreenbuilds.com
+            cf map-route blueskygreenbuilds-dark blueskygreenbuilds.com -n www
             sleep 15 # give time to demo round robin
             # Stop sending traffic to previous version
-            cf unmap-route blueskygreenbuilds www.blueskygreenbuilds.com
+            cf unmap-route blueskygreenbuilds blueskygreenbuilds.com -n www
             # stop previous version
             cf stop blueskygreenbuilds
             # delete previous version
