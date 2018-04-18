@@ -12,7 +12,7 @@ public class AboutPageIT extends AbstractWebIT {
     public void testAboutPageLoads() throws Exception {
         WebDriver webDriver = createWebDriver();
         webDriver.get(getBaseUrl() + "/about");
-        assertThat("Did not find correct aboutPage title",webDriver.getTitle(),is("About Circle CI Challenge"));
+        assertThat("Did not find correct aboutPage title",webDriver.getTitle(),is("Get Started with Blue Sky, Green Builds"));
     }
 
 
