@@ -32,6 +32,8 @@ public abstract class AbstractWebIT {
     private String version;
     @Value("${sauce.browser}")
     private String browser; //{android, chrome, firefox, htmlunit, internet explorer, iPhone, iPad, opera, safari}
+    @Value("${sauce.tunnel}")
+    private String tunnel;
 
     // Enable Sauce Labs browser testing, compliment Open Source license.  SauceLabs.com
     private static String SAUCE_USER = System.getenv("SAUCELABS_USER"); //these must match env variables
@@ -44,6 +46,7 @@ public abstract class AbstractWebIT {
         caps.setBrowserName(browser);
         caps.setCapability("platform", platform);
         caps.setCapability("version", version);
+        caps.setCapability("tunnelIdentifier", tunnel);
         LoggingPreferences logPrefs = new LoggingPreferences();
         logPrefs.enable(LogType.BROWSER, Level.INFO);
         caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
