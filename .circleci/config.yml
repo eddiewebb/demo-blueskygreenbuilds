@@ -19,7 +19,7 @@ workflows:
             - test-macosx-safari
       - dark-deploy:
           requires:
-            - integration-test
+            - package
           filters:
             branches:
               only: master
