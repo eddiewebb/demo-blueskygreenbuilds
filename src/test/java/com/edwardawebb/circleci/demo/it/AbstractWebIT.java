@@ -5,9 +5,11 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
+import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,6 +26,15 @@ public abstract class AbstractWebIT {
     @LocalServerPort
     private int port;
 
+    @Value("${sauce.platform}")
+    private String platform;
+    @Value("${sauce.version}")
+    private String version;
+    @Value("${sauce.browser}")
+    private String browser; //{android, chrome, firefox, htmlunit, internet explorer, iPhone, iPad, opera, safari}
+    @Value("${sauce.tunnel}")
+    private String tunnel;
+
     // Enable Sauce Labs browser testing, compliment Open Source license.  SauceLabs.com
     private static String SAUCE_USER = System.getenv("SAUCELABS_USER"); //these must match env variables
     private static String SAUCE_ACCESS_KEY = System.getenv("SAUCELABS_KEY"); //these must match env variables
@@ -31,9 +42,11 @@ public abstract class AbstractWebIT {
 
 
     public WebDriver  createWebDriver() throws MalformedURLException {
-        DesiredCapabilities caps = DesiredCapabilities.chrome();
-        caps.setCapability("platform", "Windows 10");
-        caps.setCapability("version", "57.0");
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setBrowserName(browser);
+        caps.setCapability("platform", platform);
+        caps.setCapability("version", version);
+        caps.setCapability("tunnelIdentifier", tunnel);
         LoggingPreferences logPrefs = new LoggingPreferences();
         logPrefs.enable(LogType.BROWSER, Level.INFO);
         caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
@@ -44,5 +57,8 @@ public abstract class AbstractWebIT {
         String baseUrl = "http://localhost:" + port;
         return baseUrl;
     }
+
+
+
 
 }
