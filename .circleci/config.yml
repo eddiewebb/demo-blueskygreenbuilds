@@ -3,20 +3,20 @@ workflows:
   build-deploy:
     jobs:
       - unit-test
-      - test-windows-chrome:
+      - test-chrome:
           requires:
             - unit-test
-      - test-windows-ie:
+      - test-ie:
           requires:
             - unit-test
-      - test-macosx-safari:
-          requires:
-            - unit-test
+     #- test-macosx-safari:
+     #    requires:
+     #      - unit-test
       - package:
           requires:
-            - test-windows-ie
-            - test-windows-chrome
-            - test-macosx-safari
+            - test-ie
+            - test-chrome
+           # - test-macosx-safari
       - dark-deploy:
           requires:
             - package
@@ -65,7 +65,7 @@ jobs:
           path: target/surefire-reports
 
 
-  test-windows-chrome:
+  test-chrome:
     docker:
       - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo
@@ -101,7 +101,7 @@ jobs:
             killall sc #kill saucelabs tunnel
 
 
-  test-windows-ie:
+  test-ie:
     docker:
       - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo
