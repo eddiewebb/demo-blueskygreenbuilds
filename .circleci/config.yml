@@ -213,7 +213,7 @@ jobs:
             fi
             # Send "real" url to new version
             cf map-route blueskygreenbuilds-dark blueskygreenbuilds.com -n www
-            sleep 15 # give time to demo round robin
+            sleep 30  # give time to demo round robin
             # Stop sending traffic to previous version
             cf unmap-route blueskygreenbuilds blueskygreenbuilds.com -n www
             # stop previous version
