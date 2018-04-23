@@ -144,6 +144,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
+            - blueskygreenbuilds-{{ checksum "pom.xml" }}
             - blueskygreenbuilds-sonar-mvn-{{ checksum "pom.xml" }}
       - restore_cache:
           key: blueskygreenbuilds-sonar
