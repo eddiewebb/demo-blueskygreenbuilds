@@ -143,13 +143,8 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
-      - run: mvn dependency:go-offline
-      - save_cache:
-          paths:
-           - ~/.m2
-          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
-
+          keys:
+            - blueskygreenbuilds-sonar-mvn-{{ checksum "pom.xml" }}
       - restore_cache:
           key: blueskygreenbuilds-sonar
       - run:
@@ -158,12 +153,16 @@ jobs:
             mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar \
                  -Dsonar.host.url=https://sonarcloud.io \
                  -Dsonar.organization=circleci-demo \
-                 -Dsonar.login=${SONAR_KEY}
+                 -Dsonar.login=${SONAR_KEY} \
                  -Dsonar.branch.name=${CIRCLE_BRANCH}
       - save_cache:
           paths:
            - ~/.sonar/cache
           key: blueskygreenbuilds-sonar
+      - save_cache:
+          paths:
+           - ~/.m2
+          key: blueskygreenbuilds-sonar-mvn-{{ checksum "pom.xml" }}
 
 
   test-macosx-safari:
