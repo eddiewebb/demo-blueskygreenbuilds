@@ -12,15 +12,8 @@ public class BuildInfo {
     @Value("${circle_build_num}")
     private String buildNum;
 
-    public String getCommitHash() {
-        return commitHash;
-    }
 
-    public void setCommitHash(String commitHash) {
-        this.commitHash = commitHash;
-    }
-
-    @Value("${commit_hash}")
+    @Value("${circle_commit}")
     private String commitHash;
 
     @Value("${CF_INSTANCE_GUID}")
@@ -46,6 +39,14 @@ public class BuildInfo {
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+    public String getCommitHash() {
+        return commitHash;
+    }
+
+    public void setCommitHash(String commitHash) {
+        this.commitHash = commitHash;
     }
 
     public String getApplicationName() {
