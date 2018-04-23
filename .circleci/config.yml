@@ -53,15 +53,16 @@ jobs:
             - blueskygreenbuilds
 
       - run: mvn dependency:go-offline
+      - run:
+          name: Build and *unit* test
+          command: |
+            mvn test -B  #run your tests
+
 
       - save_cache:
           paths:
            - ~/.m2
           key: blueskygreenbuilds-{{ checksum "pom.xml" }}
-      - run:
-          name: Build and *unit* test
-          command: |
-            mvn test -B  #run your tests
 
       - store_test_results:
           path: target/surefire-reports
@@ -79,11 +80,6 @@ jobs:
             - blueskygreenbuilds
 
       - run: mvn dependency:go-offline
-
-      - save_cache:
-          paths:
-           - ~/.m2
-          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
 
       - run:
           name: Start SauceLabs Tunnel (required if testing on CircleCI container)
@@ -103,6 +99,10 @@ jobs:
           command: |
             mvn verify -B -Dspring.profiles.active=it -Dsauce.browser=chrome  -Dsauce.tunnel="chrome" #package and run your browser tests
             killall sc #kill saucelabs tunnel
+      - save_cache:
+          paths:
+           - ~/.m2
+          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
 
 
   test-ie:
@@ -118,10 +118,6 @@ jobs:
 
       - run: mvn dependency:go-offline
 
-      - save_cache:
-          paths:
-           - ~/.m2
-          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
 
       - run:
           name: Start SauceLabs Tunnel (required if testing on CircleCI container)
@@ -141,6 +137,12 @@ jobs:
           command: |
             mvn verify -B -Dspring.profiles.active=it -Dsauce.version=11.103 -Dsauce.tunnel="ie" -Dsauce.browser="internet explorer" #package and run your browser tests
             killall sc #kill saucelabs tunnel
+
+
+      - save_cache:
+          paths:
+           - ~/.m2
+          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
 
   SCA:
     docker:
