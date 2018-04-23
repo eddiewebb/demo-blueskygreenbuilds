@@ -152,7 +152,10 @@ jobs:
 
       - restore_cache:
           key: blueskygreenbuilds-sonar
-      - run: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar \
+      - run:
+          name: Static Code Analysis (SonarQube)
+          command: |
+            mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar \
                  -Dsonar.host.url=https://sonarcloud.io \
                  -Dsonar.organization=circleci-demo \
                  -Dsonar.login=${SONAR_KEY}
