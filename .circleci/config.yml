@@ -9,9 +9,9 @@ workflows:
       - test-ie:
           requires:
             - unit-test
-     #- test-macosx-safari:
-     #    requires:
-     #      - unit-test
+      - SCA:
+         requires:
+           - unit-test
       - package:
           requires:
             - test-ie
@@ -135,6 +135,31 @@ jobs:
           command: |
             mvn verify -B -Dspring.profiles.active=it -Dsauce.version=11.103 -Dsauce.tunnel="ie" -Dsauce.browser="internet explorer" #package and run your browser tests
             killall sc #kill saucelabs tunnel
+
+  SCA:
+    docker:
+      - image: circleci/openjdk:8-jdk-browsers
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
+      - run: mvn dependency:go-offline
+      - save_cache:
+          paths:
+           - ~/.m2
+          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
+
+      - restore_cache:
+          key: blueskygreenbuilds-sonar
+      - run: mvnw clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar \
+                 -Dsonar.host.url=https://sonarcloud.io \
+                 -Dsonar.organization=circleci-demo \
+                 -Dsonar.login=${SONAR_KEY}
+      - save_cache:
+          paths:
+           - ~/.sonar/cache
+          key: blueskygreenbuilds-sonar
 
 
   test-macosx-safari:
