@@ -240,6 +240,9 @@ jobs:
             cf push --no-start blueskygreenbuilds-dark -f cf-manifest.yml -p standalone-app.jar -n dark -d blueskygreenbuilds.com
             cf set-env blueskygreenbuilds-dark circle_build_num ${CIRCLE_BUILD_NUM}
             cf set-env blueskygreenbuilds-dark circle_commit ${CIRCLE_SHA1}
+            cf set-env blueskygreenbuilds-dark circle_workflow_guid ${CIRCLE_WORKFLOW_ID}
+
+
             # Push as "dark" instance (URL in manifest)
             cf start blueskygreenbuilds-dark
             # Ensure dark route is exclusive to dark app
