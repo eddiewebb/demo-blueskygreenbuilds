@@ -16,7 +16,7 @@ public class HomePageIT extends AbstractWebIT {
 
         WebDriver webDriver = createWebDriver();
         webDriver.get(getBaseUrl());
-        assertThat("Carousel Button 1 has incorrect text",webDriver.findElement(By.id("car-btn-1")).getText(),containsString("Earn Money!"));
+        assertThat("Carousel Button 1 has incorrect text",webDriver.findElement(By.id("car-btn-1")).getText(),containsString("Get Started!"));
     }
 
 
