@@ -17,10 +17,15 @@ public class BuildInfo {
     private String commitHash;
 
     @Value("${CF_INSTANCE_GUID}")
-    private String guid;
+    private String cfGuid;
 
     @Value("${vcap.application.name}")
     private String applicationName;
+
+    @Value("${circle_workflow_guid}")
+    private String workflowGuid;
+
+    private static final String URL_PREFIX="https://circleci.com/workflow-run/";
 
     public BuildInfo() {
     }
@@ -33,13 +38,25 @@ public class BuildInfo {
         this.index = index;
     }
 
-    public String getGuid() {
-        return guid;
+    public String getCfGuid() {
+        return cfGuid;
     }
 
-    public void setGuid(String guid) {
-        this.guid = guid;
+    public void setCfGuid(String guid) {
+        this.cfGuid = guid;
     }
+    public String getWorkflowGuid() {
+        return workflowGuid;
+    }
+
+    public void setWorkflowGuid(String workflowGuid) {
+        this.workflowGuid = workflowGuid;
+    }
+
+    public String getWorkflowUrl(){
+        return URL_PREFIX + workflowGuid;
+    }
+
 
     public String getCommitHash() {
         return commitHash;
