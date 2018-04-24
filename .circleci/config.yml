@@ -26,13 +26,14 @@ workflows:
       - hold:
           type: approval
           requires:
-            - dark-deploy
+            - package
           filters:
             branches:
               only: master
       - live-deploy:
           requires:
             - hold
+            - dark-deploy
           filters:
             branches:
               only: master
