@@ -49,8 +49,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - blueskygreenbuilds-{{ checksum "pom.xml" }}
-            - blueskygreenbuilds
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-mvn-V2
 
       - run: mvn dependency:go-offline
       - run:
@@ -62,7 +62,7 @@ jobs:
       - save_cache:
           paths:
            - ~/.m2
-          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
+          key: blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
 
       - store_test_results:
           path: target/surefire-reports
@@ -76,8 +76,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - blueskygreenbuilds-{{ checksum "pom.xml" }}
-            - blueskygreenbuilds
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-mvn-V2
 
       - run: mvn dependency:go-offline
 
@@ -102,7 +102,7 @@ jobs:
       - save_cache:
           paths:
            - ~/.m2
-          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
+          key: blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
 
 
   test-ie:
@@ -113,8 +113,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - blueskygreenbuilds-{{ checksum "pom.xml" }}
-            - blueskygreenbuilds
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-mvn-V2
 
       - run: mvn dependency:go-offline
 
@@ -142,7 +142,7 @@ jobs:
       - save_cache:
           paths:
            - ~/.m2
-          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
+          key: blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
 
   SCA:
     docker:
@@ -152,7 +152,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - blueskygreenbuilds-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
             - blueskygreenbuilds-sonar-mvn-{{ checksum "pom.xml" }}
       - restore_cache:
           key: blueskygreenbuilds-sonar
@@ -184,13 +184,13 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - blueskygreenbuilds-{{ checksum "pom.xml" }}
-            - blueskygreenbuilds
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-mvn-V2
       - run: mvn dependency:go-offline
       - save_cache:
           paths:
            - ~/.m2
-          key: blueskygreenbuilds-{{ checksum "pom.xml" }}
+          key: blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
       - run:
           name: Package Jar
           command: |
