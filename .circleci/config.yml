@@ -16,7 +16,7 @@ workflows:
           requires:
             - test-ie
             - test-chrome
-           # - test-macosx-safari
+           # - SCA
       - dark-deploy:
           requires:
             - package
@@ -117,7 +117,6 @@ jobs:
             - blueskygreenbuilds-mvn-V2
 
       - run: mvn dependency:go-offline
-
 
       - run:
           name: Start SauceLabs Tunnel (required if testing on CircleCI container)
