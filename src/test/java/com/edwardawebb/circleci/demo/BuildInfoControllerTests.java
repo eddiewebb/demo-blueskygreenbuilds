@@ -16,13 +16,16 @@ public class BuildInfoControllerTests {
     BuildInfo buildInfo = new BuildInfo();
 
     @Test
-    public void testThatBuildInfoInvludesCommitHash() throws Exception {
+    public void testThatBuildInfoReturnedMatchesPassedReference() throws Exception {
+
         notNull(buildInfo);
         buildInfo.setCommitHash(HASH);
         RestController controller = new RestController(buildInfo);
         BuildInfo returned = controller.greeting();
-        assertThat("Commit Hash Missing",returned,notNullValue());
-        assertThat("Commit Hash Mismatch",returned.getCommitHash(),is(HASH));
+
+        assertThat("Build Info Is Different",returned,is(buildInfo));
+        assertThat("Provided values null",returned,notNullValue());
+        assertThat("Data Mismatch",returned.getCommitHash(),is(HASH));
     }
 
 

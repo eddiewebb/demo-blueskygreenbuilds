@@ -25,7 +25,7 @@ public class BuildInfo {
     @Value("${circle_workflow_guid}")
     private String workflowGuid;
 
-    private static final String URL_PREFIX="https://circleci.com/workflow-run/";
+    protected static final String URL_PREFIX="https://circleci.com/workflow-run/";
 
     public BuildInfo() {
     }
