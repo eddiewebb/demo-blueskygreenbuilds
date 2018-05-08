@@ -60,7 +60,7 @@ public class BuildInfoTests {
             System.out.println("read method not found!");
             e.printStackTrace();
         }
-        
+
         System.out.println("<-- Reading for value: " + value);
 
         assertThat("Value null",returned,notNullValue());
