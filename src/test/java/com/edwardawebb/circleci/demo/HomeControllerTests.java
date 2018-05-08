@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.fail;
 
 public class HomeControllerTests {
 
@@ -13,6 +14,7 @@ public class HomeControllerTests {
         HomeController controller = new HomeController();
         String route = controller.about(null);
         assertThat("Home page route did not match",route,is("about"));
+        fail();
     }
 
 
