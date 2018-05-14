@@ -60,9 +60,7 @@ public class BuildInfoTests {
             System.out.println("read method not found!");
             e.printStackTrace();
         }
-        //Exclusive/special methods modify value
 
-        // test in matches out
         System.out.println("<-- Reading for value: " + value);
 
         assertThat("Value null",returned,notNullValue());
