@@ -28,8 +28,8 @@ def newDemoIssueId():
         exit(1)
 
 def newDemoBranch(issue):
-    print("Creating branch for issue: " + str(issue['id']))
-    branch_name='issue-'+str(issue['id'])
+    branch_name='issue-'+str(issue['number'])
+    print("Creating branch: " + branch_name)
     call(['git','checkout','-b',branch_name])
     return branch_name
 
@@ -41,17 +41,17 @@ def uncommentTestFailure():
         for line in lines:
             sources.write(re.sub(r'\/\/fail', 'fail', line))
 
-def commitLocalChangeAgainstIssue(issue):
-    commit_message="Fixes issue #" + str(issue['id']) + ", service now Y's properly."
+def commitLocalChangeAgainstIssue(branch_name,  issue):
+    commit_message="Fixes issue #" + str(issue['number']) + ", service now Y's properly."
     call(['git','commit','-am',commit_message])
-    call(['git','push'])
+    call(['git','push','--set-upstream','origin',branch_name])
 
 def openPullRequestAgainstBranch(branch_name, issue):
     pull_request={
         'title':'Merge ' + branch_name + ' into production stream',
         'head':branch_name,
         'base':'master',
-        'body':'Please review and merge changes for Issue #' +str(issue['id'])
+        'body':'Please review and merge changes for Issue #' +str(issue['number'])
     }
     r = requests.post(base_url+'/pulls',json=pull_request,auth=auth)
     if r.status_code == 201:
@@ -65,6 +65,6 @@ def openPullRequestAgainstBranch(branch_name, issue):
 issue=newDemoIssueId()
 branch=newDemoBranch(issue)
 uncommentTestFailure()
-commitLocalChangeAgainstIssue(issue)
+commitLocalChangeAgainstIssue(branch_name,issue)
 pr=openPullRequestAgainstBranch(branch_name,issue)
 print("PR: " + pr['url'] + " created")
