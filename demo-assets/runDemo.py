@@ -4,7 +4,7 @@ import requests
 import re
 from subprocess import call
 
-starting_hash='1dac52e2ee4a63c5487acb6f23c968467e0ed6cb'
+starting_hash='df0130d4b7b27fb48cc78641f801f529a1c1abb6'
 
 github_user='eddiewebb'
 github_token=os.environ['CCI_DEMO_GITHUB_API_TOKEN']
