@@ -65,6 +65,6 @@ def openPullRequestAgainstBranch(branch_name, issue):
 issue=newDemoIssueId()
 branch=newDemoBranch(issue)
 uncommentTestFailure()
-commitLocalChangeAgainstIssue(branch_name,issue)
-pr=openPullRequestAgainstBranch(branch_name,issue)
+commitLocalChangeAgainstIssue(branch,issue)
+pr=openPullRequestAgainstBranch(branch,issue)
 print("PR: " + pr['url'] + " created")
