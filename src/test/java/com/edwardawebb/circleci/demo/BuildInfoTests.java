@@ -67,7 +67,5 @@ public class BuildInfoTests {
         assertThat("Values doesnt match",returned,is(value));
         System.out.println("   == Match");
 
-
-
     }
 }
