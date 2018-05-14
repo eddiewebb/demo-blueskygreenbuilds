@@ -61,9 +61,9 @@ def openPullRequestAgainstBranch(branch_name, issue):
         exit(1)
 
 
-revertToKnownCleanState
+#revertToKnownCleanState
 issue=newDemoIssueId()
-branch=newDemoBranch()
+branch=newDemoBranch(issue)
 uncommentTestFailure()
 commitLocalChangeAgainstIssue(issue)
 pr=openPullRequestAgainstBranch(branch_name,issue)
