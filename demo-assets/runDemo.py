@@ -4,7 +4,7 @@ import requests
 import re
 from subprocess import call
 
-starting_hash='0db3e9200d14b8852731fb4c8ea4e696367aba06'
+starting_hash='d60eb97bf986c231792b86aafd05bc18796f1da6'
 
 github_user='eddiewebb'
 github_token=os.environ['CCI_DEMO_GITHUB_API_TOKEN']
@@ -85,8 +85,15 @@ def uncommentTestFailure():
         for line in lines:
             sources.write(re.sub(r'\/\/fail', 'fail', line))
 
-def commitLocalChangeAgainstIssue(branch_name,  issue):
-    commit_message="Fixes issue #" + str(issue['number']) + ", service now Y's properly."
+
+def commentTestFailure():
+    with open(test_case, "r") as sources:
+        lines = sources.readlines()
+    with open(test_case, "w") as sources:
+        for line in lines:
+            sources.write(re.sub(r'fail\(', '//fail(', line))
+
+def commitLocalChangeAgainstIssue(branch_name,  issue, commit_message):
     call(['git','commit','-am',commit_message])
     call(['git','push','--set-upstream','origin',branch_name])
 
@@ -109,6 +116,9 @@ revertToKnownCleanState()
 issue=newDemoIssueId()
 branch=newDemoBranch(issue)
 uncommentTestFailure()
-commitLocalChangeAgainstIssue(branch,issue)
+commitLocalChangeAgainstIssue(branch,issue,"Breaks issue #" + str(issue['number']) + " with failing test.")
 pr=openPullRequestAgainstBranch(branch,issue)
 print("PR: " + pr['html_url'] + " created")
+input("Press Enter to commit fix...")
+commentTestFailure()
+commitLocalChangeAgainstIssue(branch,issue,"Fixes issue #" + str(issue['number']) + ", tests passing.")
