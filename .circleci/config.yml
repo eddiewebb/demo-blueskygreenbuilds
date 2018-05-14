@@ -10,14 +10,14 @@ workflows:
           requires:
             - unit-test
       - SCA:
-         requires:
-           - unit-test
+          requires:
+            - unit-test
       - package:
           requires:
             - unit-test
-         filters:
-           branches:
-             only: master
+          filters:
+            branches:
+              only: master
       - dark-deploy:
           requires:
             - package
