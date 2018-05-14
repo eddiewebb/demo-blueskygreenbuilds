@@ -4,15 +4,60 @@ import requests
 import re
 from subprocess import call
 
+starting_hash='d60eb97bf986c231792b86aafd05bc18796f1da6'
+
 github_user='eddiewebb'
 github_token=os.environ['CCI_DEMO_GITHUB_API_TOKEN']
 github_repo='demo-blueskygreenbuilds'
 auth=(github_user,github_token)
 
+
 base_url='https://api.github.com/repos/{github_user}/{github_repo}'.format(**locals())
+
+
+test_case='src/test/java/com/edwardawebb/circleci/demo/BuildInfoControllerTests.java'
+
+
+
+
+
+
 
 print("using base URL: " + base_url )
 
+def revertToKnownCleanState():
+    # close open issues
+    closeAllGithubeIssues()
+
+    # revert test_case
+    call(['git','checkout','master'])
+    call(['git','pull'])
+    call(['git','checkout',starting_hash,'--',test_case])
+    call(['git','commit','-am','"Revert test cases to passing state [skip ci]"'])
+    call(['git','push','--force'])
+
+    # remove any branches
+
+def closeAllGithubeIssues():
+    params={'state':'open'}
+    r = requests.get(base_url+'/issues',params=params,auth=auth)
+    if r.status_code == 200:
+        for issue in r.json():
+            print("Closing issue: " + issue['url'])
+            closeGithubClosable(issue)
+    else:
+        print("error contactubg GH api")
+        exit(1)
+
+def closeGithubClosable(closable):
+    status={'state':'closed'}
+    r = requests.patch(closable['url'],json=status,auth=auth)
+    if r.status_code == 200:
+        print("\t closed")
+        return r.json()
+    else:
+        print("error contactubg GH api")
+        exit(1)
 
 def newDemoIssueId():
     print("running")
@@ -34,7 +79,6 @@ def newDemoBranch(issue):
     return branch_name
 
 def uncommentTestFailure():
-    test_case='src/test/java/com/edwardawebb/circleci/demo/BuildInfoControllerTests.java'
     with open(test_case, "r") as sources:
         lines = sources.readlines()
     with open(test_case, "w") as sources:
@@ -61,10 +105,10 @@ def openPullRequestAgainstBranch(branch_name, issue):
         exit(1)
 
 
-#revertToKnownCleanState
+revertToKnownCleanState()
 issue=newDemoIssueId()
 branch=newDemoBranch(issue)
 uncommentTestFailure()
 commitLocalChangeAgainstIssue(branch,issue)
 pr=openPullRequestAgainstBranch(branch,issue)
-print("PR: " + pr['url'] + " created")
+print("PR: " + pr['html_url'] + " created")
