@@ -24,3 +24,5 @@ nbdist/
 .nb-gradle/.idea/
 demo.iml
 target/
+Pipfile Pipfile.lock
+Pipfile*
