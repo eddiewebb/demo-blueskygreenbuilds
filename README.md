@@ -35,3 +35,7 @@ This project uses spring boot, so run as you would any other like project to sta
 ```
 mvn spring-boot:run
 ```
+
+
+# Demo
+See [demo-assets](demo-assets)
