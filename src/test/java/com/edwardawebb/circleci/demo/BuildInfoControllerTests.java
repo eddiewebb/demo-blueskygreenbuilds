@@ -7,6 +7,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.fail;
 
 public class BuildInfoControllerTests {
 
@@ -26,7 +27,7 @@ public class BuildInfoControllerTests {
         assertThat("Build Info Is Different",returned,is(buildInfo));
         assertThat("Provided values null",returned,notNullValue());
         assertThat("Data Mismatch",returned.getCommitHash(),is(HASH));
-        //fail("Demo failing test is failing");
+        fail("Demo failing test is failing");
     }
 
 
