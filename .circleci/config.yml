@@ -14,9 +14,10 @@ workflows:
            - unit-test
       - package:
           requires:
-            - test-ie
-            - test-chrome
-           # - SCA
+            - unit-test
+         filters:
+           branches:
+             only: master
       - dark-deploy:
           requires:
             - package
@@ -26,14 +27,15 @@ workflows:
       - hold:
           type: approval
           requires:
-            - package
+            - dark-deploy
+            - test-ie
+            - test-chrome
           filters:
             branches:
               only: master
       - live-deploy:
           requires:
             - hold
-            - dark-deploy
           filters:
             branches:
               only: master
@@ -296,4 +298,3 @@ jobs:
             cf delete blueskygreenbuilds -f
             # Switch name of "dark" version to claim correct name
             cf rename blueskygreenbuilds-dark blueskygreenbuilds
-
