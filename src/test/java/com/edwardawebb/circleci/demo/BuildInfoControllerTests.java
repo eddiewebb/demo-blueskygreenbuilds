@@ -4,7 +4,6 @@ import com.edwardawebb.circleci.demo.controllers.RestController;
 import org.junit.Test;
 
 import static org.apache.commons.lang3.Validate.notNull;
-import static org.assertj.core.api.Fail.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
