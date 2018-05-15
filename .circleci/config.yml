@@ -214,7 +214,6 @@ jobs:
 
   dark-deploy:
     docker:
-      #- image: eddiewebb/queue-circleci-openjdk:8-jdk-browsers
       - image: circleci/openjdk:8-jdk
     working_directory: ~/deploy
     steps:
@@ -259,7 +258,6 @@ jobs:
 
   live-deploy:
     docker:
-      #- image: eddiewebb/queue-circleci-openjdk:8-jdk-browsers
       - image: circleci/openjdk:8-jdk
     working_directory: ~/deploy
     steps:
