@@ -28,6 +28,7 @@ After running script above the repo will have a single PR and issue, both showin
 7. Reload PR overview page,  PR details
 8. Related issue, specific commits
 
+## Chat OPs - per project settings
 
 ## Image per job
-## 
+##
