@@ -16,6 +16,10 @@ import static org.junit.Assert.fail;
 public class BuildInfoTests {
 
     private static final String WORKFLOW_URL_NAME = "workflowUrl" ;
+    private static final String GITHUB_URL_NAME = "githubUrl" ;
+    private static final String GH_USER="eddie";
+    private static final String GH_REPO="bsgb";
+    private static final String GH_COMMIT="1239853";
 
     @Test
     public void testBuildInfoPreservesValues() throws IntrospectionException {
@@ -41,7 +45,13 @@ public class BuildInfoTests {
         String value = UUID.randomUUID().toString();
         if(pd.getName().equals(WORKFLOW_URL_NAME)){
             System.out.println("--> no write, expecting modified value from workflowGuid");
-            value = BuildInfo.URL_PREFIX + buildInfo.getWorkflowGuid();
+            value = BuildInfo.CCI_URL_PREFIX + buildInfo.getWorkflowGuid();
+        }else if(pd.getName().equals(GITHUB_URL_NAME)){
+            System.out.println("--> no write, expecting modified value from user/repo/commit");
+            buildInfo.setCommitUser(GH_USER);
+            buildInfo.setRepoName(GH_REPO);
+            buildInfo.setCommitHash(GH_COMMIT);
+            value = String.format(BuildInfo.GH_URL_FORMAT,GH_USER,GH_REPO,GH_COMMIT );
         }else{
             System.out.println("--> writing random value");
             try {

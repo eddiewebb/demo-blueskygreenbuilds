@@ -26,6 +26,10 @@ After running script above the repo will have a single PR and issue, both showin
  - Ultimately flexible
 6. See Workflow passing (should get chrome notification)
 7. Reload PR overview page,  PR details
+
+- Filters, Tags, RegExp
+- Caching
+- ChatOps
 8. Related issue, specific commits
 
 ## Chat OPs - per project settings
