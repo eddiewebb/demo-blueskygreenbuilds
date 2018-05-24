@@ -242,6 +242,8 @@ jobs:
             cf set-env blueskygreenbuilds-dark circle_build_num ${CIRCLE_BUILD_NUM}
             cf set-env blueskygreenbuilds-dark circle_commit ${CIRCLE_SHA1}
             cf set-env blueskygreenbuilds-dark circle_workflow_guid ${CIRCLE_WORKFLOW_ID}
+            cf set-env blueskygreenbuilds-dark circle_user ${CIRCLE_USERNAME}
+            cf set-env blueskygreenbuilds-dark circle_repo ${CIRCLE_REPONAME}
 
 
             # Push as "dark" instance (URL in manifest)
