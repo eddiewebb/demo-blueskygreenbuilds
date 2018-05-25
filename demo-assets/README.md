@@ -30,6 +30,7 @@ After running script above the repo will have a single PR and issue, both showin
 - Filters, Tags, RegExp
 - Caching
 - ChatOps
+- IMage per job
 8. Related issue, specific commits
 
 ## Chat OPs - per project settings
