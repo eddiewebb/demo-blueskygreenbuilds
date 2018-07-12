@@ -68,6 +68,29 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>0.9.4</version>
+				<configuration>
+					<to>
+						<image>registry.hub.docker.com/eddiewebb/blueskygreenbuilds-demo</image>
+					</to>
+					<container>
+						<jvmFlags>
+							<jvmFlag>-Dcircle_build_num=99</jvmFlag>
+							<jvmFlag>-Dcircle_commit=1234abcdef</jvmFlag>
+							<jvmFlag>-Dcircle_user=eddiewebb</jvmFlag>
+							<jvmFlag>-Dcircle_repo=demo-repo</jvmFlag>
+							<jvmFlag>-Dcircle_workflow_guid=1234</jvmFlag>
+							<jvmFlag>-Dvcap.application.name=blueskygreenbuilds-test</jvmFlag>
+						</jvmFlags>
+						<ports>
+							<port>8080</port>
+						</ports>
+					</container>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
