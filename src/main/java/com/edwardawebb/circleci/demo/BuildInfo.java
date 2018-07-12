@@ -6,9 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class BuildInfo {
 
-    @Value("${CF_INSTANCE_INDEX}")
-    private String index;
-
     @Value("${circle_build_num}")
     private String buildNum;
 
@@ -20,9 +17,6 @@ public class BuildInfo {
 
     @Value("${circle_repo}")
     private String repoName;
-
-    @Value("${CF_INSTANCE_GUID}")
-    private String cfGuid;
 
     @Value("${vcap.application.name}")
     private String applicationName;
@@ -37,21 +31,6 @@ public class BuildInfo {
     public BuildInfo() {
     }
 
-    public String getIndex() {
-        return index;
-    }
-
-    public void setIndex(String index) {
-        this.index = index;
-    }
-
-    public String getCfGuid() {
-        return cfGuid;
-    }
-
-    public void setCfGuid(String guid) {
-        this.cfGuid = guid;
-    }
     public String getWorkflowGuid() {
         return workflowGuid;
     }
