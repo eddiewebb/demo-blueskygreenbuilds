@@ -2,10 +2,7 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - deploy-docker
-      - unit-test:
-          requires:
-            - deploy-docker
+      - unit-test
       - test-chrome:
           requires:
             - unit-test
@@ -24,6 +21,12 @@ workflows:
       - package-docker:
           requires:
             - unit-test
+          filters:
+            branches:
+              only: master
+      - deploy-docker:
+          requires:
+            - package-docker
           filters:
             branches:
               only: master
@@ -247,6 +250,7 @@ jobs:
       - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo
     steps:
+      - checkout
       - run: 
           name: Install gcloud SDK
           command: |
@@ -257,13 +261,19 @@ jobs:
             # Import the Google Cloud Platform public key
             curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
             # Update the package list and install the Cloud SDK
-            sudo apt-get update -y && sudo apt-get install -y google-cloud-sdk
+            sudo apt-get update -y && sudo apt-get install -y google-cloud-sdk kubectl
       - run: 
           name: Initialize & Authenticate gcloud SDK
           command: |
             while read LINE; do eval echo $LINE; done < .circleci/gcp_key.json > /tmp/gcp_key.json
-            gcloud init --console-only
+            #gcloud init --console-only
             gcloud auth activate-service-account --key-file /tmp/gcp_key.json
+            gcloud config set project research-180616
+            gcloud config set compute/zone us-central1-a
+            gcloud container clusters get-credentials blueskygreenbuilds
+            kubectl run blueskygreenbuilds --image=hub.docker.com/r/eddiewebb/blueskygreenbuilds-demo --port 8080 || kubectl set image deployment/blueskygreenbuilds blueskygreenbuilds=eddiewebb/blueskygreenbuilds-demo
+            kubectl expose deployment blueskygreenbuilds --type=LoadBalancer --port 80 --target-port 8080
+            kubectl service get
 
   dark-deploy:
     docker:
