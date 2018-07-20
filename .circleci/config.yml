@@ -24,12 +24,12 @@ workflows:
           filters:
             branches:
               only: master
-      #- deploy-docker:
-      #    requires:
-      #      - package-docker
-      #    filters:
-      #      branches:
-      #        only: master
+      - deploy-docker:
+          requires:
+            - package-docker
+          filters:
+            branches:
+              only: master
       - dark-deploy:
           requires:
             - package-jar
