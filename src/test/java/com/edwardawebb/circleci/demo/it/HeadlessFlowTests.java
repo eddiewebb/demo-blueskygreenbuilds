@@ -1,6 +1,5 @@
 package com.edwardawebb.circleci.demo.it;
 
-import com.edwardawebb.circleci.demo.DemoApplication;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
@@ -10,7 +9,6 @@ import com.gargoylesoftware.htmlunit.html.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
