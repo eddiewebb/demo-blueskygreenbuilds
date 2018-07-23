@@ -18,18 +18,18 @@ workflows:
           filters:
             branches:
               only: master
-      - package-docker:
-          requires:
-            - unit-test
-          filters:
-            branches:
-              only: master
-      - deploy-docker:
-          requires:
-            - package-docker
-          filters:
-            branches:
-              only: master
+      #- package-docker:
+      #    requires:
+      #      - unit-test
+      #    filters:
+      #      branches:
+      #        only: master
+      #- deploy-docker:
+      #    requires:
+      #      - package-docker
+      #    filters:
+      #      branches:
+      #        only: master
       - dark-deploy:
           requires:
             - package-jar
