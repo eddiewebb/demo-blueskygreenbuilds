@@ -290,12 +290,13 @@ jobs:
             source /tmp/docker_image
             echo "Deploying IMage: ${DOCKER_IMAGE}"
             kubectl run blueskygreenbuilds --image=hub.docker.com/r/${DOCKER_IMAGE} --port 8080 || (echo "Falling back to image update" && kubectl set image deployment/blueskygreenbuilds blueskygreenbuilds=${DOCKER_IMAGE})
+            kubectl rollout status deployment/blueskygreenbuilds
             kubectl expose deployment blueskygreenbuilds --type=LoadBalancer --port 80 --target-port 8080 || echo "Service already exposed"
             kubectl get service
-            export DOCKER_IP=$(kubectl get service | grep blueskygreenbuilds | tr -s " " | cut -d" " -f 4)
       - run:
           name: Smoke Test Docker Deploy
           command: |
+            DOCKER_IP=$(kubectl get service | grep blueskygreenbuilds | tr -s " " | cut -d" " -f 4)
             HTTPCODE=`curl -s -m 5 -o /dev/null -w "%{http_code}" http://${DOCKER_IP}/`
             if [ "$HTTPCODE" -ne 200 ];then
               echo "dark route note available, failing deploy"
