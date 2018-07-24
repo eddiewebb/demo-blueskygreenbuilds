@@ -267,12 +267,6 @@ jobs:
             curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
             # Update the package list and install the Cloud SDK
             sudo apt-get update -y && sudo apt-get install -y google-cloud-sdk kubectl
-      - run:
-          name: Infer Maven Release version
-          command: |
-            ./mvnw -v  #initializes wrapper to prevent noise in step below
-            export MVN_VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
-            echo "Project Version: $MVN_VERSION"
       - run: 
           name: Initialize & Authenticate gcloud SDK
           command: |
@@ -282,6 +276,8 @@ jobs:
             gcloud config set project research-180616
             gcloud config set compute/zone us-central1-a
             gcloud container clusters get-credentials blueskygreenbuilds
+             ./mvnw -v  #initializes wrapper to prevent noise in step below
+            export MVN_VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
             DOCKER_IMAGE=eddiewebb/blueskygreenbuilds-demo:${MVN_VERSION}-b${CIRCLE_BUILD_NUM}
             echo "Deploying IMage: ${DOCKER_IMAGE}"
             kubectl run blueskygreenbuilds --image=hub.docker.com/r/${DOCKER_IMAGE} --port 8080 || (echo "Falling back to image update" && kubectl set image deployment/blueskygreenbuilds blueskygreenbuilds=${DOCKER_IMAGE})
