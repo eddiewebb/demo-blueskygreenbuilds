@@ -18,18 +18,18 @@ workflows:
           filters:
             branches:
               only: master
-      #- package-docker:
-      #    requires:
-      #      - unit-test
-      #    filters:
-      #      branches:
-      #        only: master
-      #- deploy-docker:
-      #    requires:
-      #      - package-docker
-      #    filters:
-      #      branches:
-      #        only: master
+      - package-docker:
+          requires:
+            - unit-test
+          filters:
+            branches:
+              only: master
+      - deploy-docker:
+          requires:
+            - package-docker
+          filters:
+            branches:
+              only: master
       - dark-deploy:
           requires:
             - package-jar
@@ -240,9 +240,14 @@ jobs:
       - run: echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
       - setup_remote_docker
       - run:
-          name: Package Docker image with Jib
+          name: Publish Docker image with Jib
           command: |
-            ./mvnw compile jib:build -B -DskipTests=true
+            ./mvnw compile jib:build -B -DskipTests=true \
+              -Dbuild.numbern=${CIRCLE_BUILD_NUM} \
+              -Dcommit.hash=${CIRCLE_SHA1} \
+              -Dcircle.workflow=${CIRCLE_WORKFLOW_ID} \
+              -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+              -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} 
 
 
   deploy-docker:
@@ -262,6 +267,13 @@ jobs:
             curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
             # Update the package list and install the Cloud SDK
             sudo apt-get update -y && sudo apt-get install -y google-cloud-sdk kubectl
+      - run:
+          name: Infer Maven Release version
+          command: MVN_VERSION=$(mvn -q \
+                    -Dexec.executable="echo" \
+                    -Dexec.args='${project.version}' \
+                    --non-recursive \
+                    org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
       - run: 
           name: Initialize & Authenticate gcloud SDK
           command: |
@@ -271,8 +283,9 @@ jobs:
             gcloud config set project research-180616
             gcloud config set compute/zone us-central1-a
             gcloud container clusters get-credentials blueskygreenbuilds
-            kubectl run blueskygreenbuilds --image=hub.docker.com/r/eddiewebb/blueskygreenbuilds-demo --port 8080 || kubectl set image deployment/blueskygreenbuilds blueskygreenbuilds=eddiewebb/blueskygreenbuilds-demo
-            kubectl expose deployment blueskygreenbuilds --type=LoadBalancer --port 80 --target-port 8080
+            DOCKER_IMAGE=eddiewebb/blueskygreenbuilds-demo:${MVN_VERSION}-b${CIRCLE_BUILD_NUM}
+            kubectl run blueskygreenbuilds --image=hub.docker.com/r/${DOCKER_IMAGE} --port 8080 || (echo "Falling back to image update" && kubectl set image deployment/blueskygreenbuilds blueskygreenbuilds=${DOCKER_IMAGE})
+            kubectl expose deployment blueskygreenbuilds --type=LoadBalancer --port 80 --target-port 8080 || echo "Service already exposed"
             kubectl service get
 
   dark-deploy:

@@ -18,9 +18,6 @@ public class BuildInfo {
     @Value("${circle_repo}")
     private String repoName;
 
-    @Value("${vcap.application.name}")
-    private String applicationName;
-
     @Value("${circle_workflow_guid}")
     private String workflowGuid;
 
@@ -71,14 +68,6 @@ public class BuildInfo {
 
     public String getGithubUrl(){
         return formatGithubUrl(commitUser,repoName,commitHash);
-    }
-
-    public String getApplicationName() {
-        return applicationName;
-    }
-
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
     }
 
     public String getBuildNum() {
