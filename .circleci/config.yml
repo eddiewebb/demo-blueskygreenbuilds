@@ -285,7 +285,7 @@ jobs:
             DOCKER_IMAGE=eddiewebb/blueskygreenbuilds-demo:${MVN_VERSION}-b${CIRCLE_BUILD_NUM}
             kubectl run blueskygreenbuilds --image=hub.docker.com/r/${DOCKER_IMAGE} --port 8080 || (echo "Falling back to image update" && kubectl set image deployment/blueskygreenbuilds blueskygreenbuilds=${DOCKER_IMAGE})
             kubectl expose deployment blueskygreenbuilds --type=LoadBalancer --port 80 --target-port 8080 || echo "Service already exposed"
-            kubectl service get
+            kubectl get service
 
   dark-deploy:
     docker:
