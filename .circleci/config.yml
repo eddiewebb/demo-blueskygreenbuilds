@@ -297,6 +297,8 @@ jobs:
           name: Smoke Test Docker Deploy
           command: |
             DOCKER_IP=$(kubectl get service | grep blueskygreenbuilds | tr -s " " | cut -d" " -f 4)
+            echo "Testing against IP: ${DOCKER_IP}"
+            sleep 10
             HTTPCODE=`curl -s -m 5 -o /dev/null -w "%{http_code}" http://${DOCKER_IP}/`
             if [ "$HTTPCODE" -ne 200 ];then
               echo "dark route note available, failing deploy"
