@@ -243,7 +243,7 @@ jobs:
           name: Publish Docker image with Jib
           command: |
             ./mvnw compile jib:build -B -DskipTests=true \
-              -Dbuild.numbern=${CIRCLE_BUILD_NUM} \
+              -Dbuild.number=${CIRCLE_BUILD_NUM} \
               -Dcommit.hash=${CIRCLE_SHA1} \
               -Dcircle.workflow=${CIRCLE_WORKFLOW_ID} \
               -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
@@ -271,7 +271,7 @@ jobs:
           name: Infer Maven Release version
           command: |
             ./mvnw -v  #initializes wrapper to prevent noise in step below
-            MVN_VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
+            export MVN_VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
             echo "Project Version: $MVN_VERSION"
       - run: 
           name: Initialize & Authenticate gcloud SDK
@@ -283,9 +283,19 @@ jobs:
             gcloud config set compute/zone us-central1-a
             gcloud container clusters get-credentials blueskygreenbuilds
             DOCKER_IMAGE=eddiewebb/blueskygreenbuilds-demo:${MVN_VERSION}-b${CIRCLE_BUILD_NUM}
+            echo "Deploying IMage: ${DOCKER_IMAGE}"
             kubectl run blueskygreenbuilds --image=hub.docker.com/r/${DOCKER_IMAGE} --port 8080 || (echo "Falling back to image update" && kubectl set image deployment/blueskygreenbuilds blueskygreenbuilds=${DOCKER_IMAGE})
             kubectl expose deployment blueskygreenbuilds --type=LoadBalancer --port 80 --target-port 8080 || echo "Service already exposed"
             kubectl get service
+            export DOCKER_IP=$(kubectl get service | grep blueskygreenbuilds | tr -s " " | cut -d" " -f 4)
+      - run:
+          name: Smoke Test Docker Deploy
+          command: |
+            HTTPCODE=`curl -s -m 5 -o /dev/null -w "%{http_code}" http://${DOCKER_IP}/`
+            if [ "$HTTPCODE" -ne 200 ];then
+              echo "dark route note available, failing deploy"
+              exit 1
+            fi
 
   dark-deploy:
     docker:
