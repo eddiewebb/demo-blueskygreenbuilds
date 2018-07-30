@@ -77,7 +77,7 @@ jobs:
 
       - save_cache:
           paths:
-           - ~/.m2
+            - ~/.m2
           key: blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
 
       - store_test_results:
