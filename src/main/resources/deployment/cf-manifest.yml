@@ -1,5 +1,5 @@
 ---
 applications:
 - name: blueskygreenbuilds
-  memory: 768M
+  memory: 256M
   instances: 1
