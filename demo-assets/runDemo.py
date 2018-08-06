@@ -131,7 +131,7 @@ def mergePullRequestIfOpen(pr):
         'commit_message':'This PR was left open during a demo, and was forced merge upon completion',
     }
     r = requests.put(base_url+'/pulls/' + str(pr['number']) + '/merge' ,json=merge_details,auth=auth)
-    if r.status_code == 201:
+    if r.status_code == 200:
         return r.json()
     else:
         print("error contacting GH api")
