@@ -135,6 +135,7 @@ def mergePullRequestIfOpen(pr):
         return r.json()
     else:
         print("error contacting GH api")
+        print(r.json())
         exit(1)
 
 main()
