@@ -18,8 +18,21 @@ base_url='https://api.github.com/repos/{github_user}/{github_repo}'.format(**loc
 test_case='src/test/java/com/edwardawebb/circleci/demo/BuildInfoControllerTests.java'
 
 
-
-
+def main():
+    revertToKnownCleanState()
+    issue=newDemoIssueId()
+    branch=newDemoBranch(issue)
+    uncommentTestFailure()
+    commitLocalChangeAgainstIssue(branch,issue,"Breaks issue #" + str(issue['number']) + " with failing test.")
+    pr=openPullRequestAgainstBranch(branch,issue)
+    print("PR: " + pr['html_url'] + " created")
+    input("Press Enter to commit fix...")
+    commentTestFailure()
+    commitLocalChangeAgainstIssue(branch,issue,"Fixes issue #" + str(issue['number']) + ", tests passing.")
+    print("PR: " + pr['html_url'] + " will be closed if still open")
+    input("Press enter to checkout latest from master (reset)")
+    mergePullRequestIfOpen(pr)
+    revertToKnownCleanState()
 
 
 
@@ -112,13 +125,17 @@ def openPullRequestAgainstBranch(branch_name, issue):
         exit(1)
 
 
-revertToKnownCleanState()
-issue=newDemoIssueId()
-branch=newDemoBranch(issue)
-uncommentTestFailure()
-commitLocalChangeAgainstIssue(branch,issue,"Breaks issue #" + str(issue['number']) + " with failing test.")
-pr=openPullRequestAgainstBranch(branch,issue)
-print("PR: " + pr['html_url'] + " created")
-input("Press Enter to commit fix...")
-commentTestFailure()
-commitLocalChangeAgainstIssue(branch,issue,"Fixes issue #" + str(issue['number']) + ", tests passing.")
+def mergePullRequestIfOpen(pr):
+    merge_details={
+        'commit_title':'Merging hanging PR from demo.',
+        'commit_message':'This PR was left open during a demo, and was forced merge upon completion',
+    }
+    r = requests.put(base_url+'/pulls/' + pr['number'] + '/merge' ,json=merge_details,auth=auth)
+    if r.status_code == 201:
+        return r.json()
+    else:
+        print("error contacting GH api")
+        exit(1)
+
+main()
+
