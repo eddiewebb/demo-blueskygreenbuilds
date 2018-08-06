@@ -130,7 +130,7 @@ def mergePullRequestIfOpen(pr):
         'commit_title':'Merging hanging PR from demo.',
         'commit_message':'This PR was left open during a demo, and was forced merge upon completion',
     }
-    r = requests.put(base_url+'/pulls/' + pr['number'] + '/merge' ,json=merge_details,auth=auth)
+    r = requests.put(base_url+'/pulls/' + str(pr['number']) + '/merge' ,json=merge_details,auth=auth)
     if r.status_code == 201:
         return r.json()
     else:
