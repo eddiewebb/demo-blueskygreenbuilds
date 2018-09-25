@@ -56,7 +56,7 @@ jobs:
             - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
             - blueskygreenbuilds-mvn-V2
 
-      - run: mvn dependency:go-offline
+      - run: mvn --batch-mode dependency:go-offline 
       - run:
           name: Build and *unit* test
           command: |
