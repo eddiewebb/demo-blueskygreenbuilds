@@ -20,6 +20,7 @@ After running script above the repo will have a single PR and issue, both showin
 2. Jump to CCI, show test failure (show more) jump to line in codebase
 3. Fix (comment) test failure, commit, push
 4. Show build triggered in UI, unit tests should pass very quick, longer running UAT trigger.
+4.  SSH FIXES (use failed unit tes, suppose I didnt know what was wrong....)
 5. Use this time to show configuration as code.
  - lives in codebase with code
  - fully deterministic
