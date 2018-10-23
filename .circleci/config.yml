@@ -221,6 +221,7 @@ jobs:
 
 
   dark-deploy:
+    resource_class: small
     docker:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/deploy
@@ -267,6 +268,7 @@ jobs:
 
 
   live-deploy:
+    resource_class: small
     docker:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/deploy
