@@ -6,19 +6,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class BuildInfo {
 
-    @Value("${circle_build_num}")
+    @Value("${CIRCLE_BUILD_NUM}")
     private String buildNum;
 
-    @Value("${circle_commit}")
+    @Value("${CIRCLE_SHA1}")
     private String commitHash;
 
-    @Value("${circle_user}")
+    @Value("${CIRCLE_PROJECT_USERNAME}")
     private String commitUser;
 
-    @Value("${circle_repo}")
+    @Value("${CIRCLE_PROJECT_REPONAME}")
     private String repoName;
 
-    @Value("${circle_workflow_guid}")
+    @Value("${CIRCLE_WORKFLOW_ID}")
     private String workflowGuid;
 
 
