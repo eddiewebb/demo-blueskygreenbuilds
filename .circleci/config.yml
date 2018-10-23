@@ -1,10 +1,10 @@
 version: 2.1
 orbs:
-  cloudfoundry: circleci/cloudfoundry@dev:0.0.1
+  cloudfoundry: circleci/cloudfoundry@0.1.4
 
 workflows:
   version: 2
-  build-deploy:
+  build_deploy:
     jobs:
       - unit-test
       - test-chrome:
@@ -22,7 +22,7 @@ workflows:
           filters:
             branches:
               only: master
-      - cloudfoundry/dark-deploy:
+      - cloudfoundry/dark_deploy:
           requires:
             - package-jar
           filters:
@@ -39,13 +39,13 @@ workflows:
       - hold:
           type: approval
           requires:
-            - cloudfoundry/dark-deploy
+            - cloudfoundry/dark_deploy
             - test-ie
             - test-chrome
           filters:
             branches:
               only: master
-      - cloudfoundry/live-deploy:
+      - cloudfoundry/live_deploy:
           requires:
             - hold
           filters:
