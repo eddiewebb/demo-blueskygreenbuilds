@@ -48,6 +48,7 @@ workflows:
 version: 2
 jobs:
   unit-test:
+    resource_class: small
     docker:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/repo
@@ -75,6 +76,7 @@ jobs:
 
 
   test-chrome:
+    resource_class: large
     docker:
       - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo
@@ -112,6 +114,7 @@ jobs:
 
 
   test-ie:
+    resource_class: large
     docker:
       - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo
@@ -150,6 +153,7 @@ jobs:
           key: blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
 
   SCA:
+    resource_class: xlarge
     docker:
       - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo
