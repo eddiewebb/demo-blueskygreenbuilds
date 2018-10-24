@@ -72,7 +72,7 @@ jobs:
     steps:
       - checkout
       - slack/notify:
-          message: "The latest inventory is ready to ship, please review/approve ASAP!"
+          message: "The latest inventory is ready to ship, please review/approve ASAP! ${CIRCLE_WORKFLOW_ID}"
           mentions: UA8FDUL8P
       - restore_cache:
           keys:
