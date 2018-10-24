@@ -39,7 +39,7 @@ workflows:
           domain: blueskygreenbuilds.com
           validate_steps:
             - slack/notify:
-                message: "The latest inventory is ready to ship, please review/approve ASAP!"
+                message: "The latest inventory is ready to ship, please review/approve ASAP! https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}"
                 mentions: UA8FDUL8P
       - hold:
           type: approval
@@ -71,9 +71,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - slack/notify:
-          message: "The latest inventory is ready to ship, please review/approve ASAP! https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}"
-          mentions: UA8FDUL8P
       - restore_cache:
           keys:
             - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
