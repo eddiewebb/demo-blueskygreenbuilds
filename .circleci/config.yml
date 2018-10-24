@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   cloudfoundry: circleci/cloudfoundry@0.1.4
+  slack:        circleci/slack@0.1.0
 
 workflows:
   version: 2
@@ -36,6 +37,10 @@ workflows:
           manifest: /tmp/cf-manifest.yml
           package: /tmp/standalone-app.jar
           domain: blueskygreenbuilds.com
+          validate_steps:
+            - slack/notify:
+                message: "The latest inventory is ready to ship, please review/approve ASAP!"
+                mentions: UA8FDUL8P
       - hold:
           type: approval
           requires:
@@ -66,6 +71,9 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - slack/notify:
+          message: "The latest inventory is ready to ship, please review/approve ASAP!"
+          mentions: UA8FDUL8P
       - restore_cache:
           keys:
             - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
