@@ -95,7 +95,7 @@ jobs:
   test-chrome:
     resource_class: large
     docker:
-      - image: circleci/openjdk:8-jdk-browsers
+      - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
     working_directory: ~/repo
     steps:
       - checkout
@@ -133,7 +133,7 @@ jobs:
   test-ie:
     resource_class: large
     docker:
-      - image: circleci/openjdk:8-jdk-browsers
+      - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
     working_directory: ~/repo
     steps:
       - checkout
@@ -172,7 +172,7 @@ jobs:
   static_code_analysis:
     resource_class: xlarge
     docker:
-      - image: circleci/openjdk:8-jdk-browsers
+      - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
     working_directory: ~/repo
     steps:
       - checkout
@@ -204,7 +204,7 @@ jobs:
 
   package-jar:
     docker:
-      - image: circleci/openjdk:8-jdk-browsers
+      - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
     working_directory: ~/repo
     steps:
       - checkout
