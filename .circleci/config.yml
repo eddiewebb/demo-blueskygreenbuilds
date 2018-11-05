@@ -67,7 +67,7 @@ jobs:
   unit-test:
     resource_class: small
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
     working_directory: ~/repo
     steps:
       - checkout
