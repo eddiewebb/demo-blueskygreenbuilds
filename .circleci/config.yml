@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   cloudfoundry: circleci/cloudfoundry@0.1.12
   slack:        circleci/slack@0.1.0
+  artifacts:    eddiewebb/artifacts@volatile
 
 workflows:
   version: 2
@@ -80,8 +81,8 @@ jobs:
       - run:
           name: Build and *unit* test
           command: |
-            mvn test -B  #run your tests
-
+            ./mvnw surefire-report:report -B  #run your tests
+            ./mvnw site -DgenerateReports=false
 
       - save_cache:
           paths:
@@ -90,6 +91,12 @@ jobs:
 
       - store_test_results:
           path: target/surefire-reports
+      - artifacts/summarize:
+          parent_folder: target/site
+          file_pattern: "*.html"
+      - store_artifacts:
+          path: target/site
+          destination: site
 
 
   test-chrome:
