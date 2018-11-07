@@ -91,12 +91,9 @@ jobs:
 
       - store_test_results:
           path: target/surefire-reports
-      - artifacts/summarize:
-          parent_folder: target/site
+      - artifacts/with_summary:
+          parent_folder: target
           file_pattern: "*.html"
-      - store_artifacts:
-          path: target/site
-          destination: site
 
 
   test-chrome:
