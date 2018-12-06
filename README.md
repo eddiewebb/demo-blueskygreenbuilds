@@ -1,6 +1,12 @@
 # Circle CI Demo
 
-Build, Test and Deploy a simple webapp using CircleCI, Saucelabs and Cloud Foundry.
+Build, Test and Deploy a modern webapp using CircleCI. 
+Includes:
+- Build a Spring Boot app with Maven (and caching maven repos!)
+- Browser testing with Selenium and Saucelabs
+- Static Code Analysis with SonarQube
+- Manual Approval/Promotion
+- Blue/Green (zero downtime) Deployments with Cloud Foundry.
 
 
 ##  Testing
