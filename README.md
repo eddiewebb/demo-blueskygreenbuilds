@@ -1,7 +1,8 @@
 # Circle CI Demo
 
 Build, Test and Deploy a modern webapp using CircleCI. 
-Includes:
+
+Technologies covered:
 - Build a Spring Boot app with Maven (and caching maven repos!)
 - Browser testing with Selenium and Saucelabs
 - Static Code Analysis with SonarQube
