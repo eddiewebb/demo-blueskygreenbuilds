@@ -96,7 +96,7 @@ workflows:
 jobs:
   "Unit Test":
     docker:
-      - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
+      - image: circleci/openjdk:8
     working_directory: ~/repo
     parallelism: 2
     steps:
