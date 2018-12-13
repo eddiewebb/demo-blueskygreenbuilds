@@ -11,6 +11,9 @@ workflows:
   build_deploy:
     jobs:
       - "Unit Test"
+      - sum-coverage:
+          requires:
+            - "Unit Test"
       - saucelabs/with_proxy:
           name: "Chrome Tests"
           requires:
@@ -111,12 +114,32 @@ jobs:
             chmod +x ./cc-test-reporter
             ./mvnw jacoco:report #convert binary jacoco.exec to XML in target/site/jacoco
             export JACOCO_SOURCE_PATH="src/main/java"
-            ./cc-test-reporter format-coverage -t jacoco  target/site/jacoco/jacoco.xml
-            ./cc-test-reporter sum-coverage --output - --parts $CIRCLE_NODE_TOTAL coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
+            ./cc-test-reporter format-coverage -t jacoco  target/site/jacoco/jacoco.xml -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
+            
       - store_test_results:
           path: target/surefire-reports
       - store_artifacts:
           path: target/surefire-reports
+      - persist_to_workspace:
+          root: coverage
+
+
+  sum-coverage:
+    docker:
+      - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
+        environment:
+          PARTS: 2
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: coverage
+      - run:
+          name: Aggregate Code Coverage
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+            ./cc-test-reporter sum-coverage --output - --parts $PARTS coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
+     
 
   package-jar:
     docker:
