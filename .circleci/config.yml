@@ -3,7 +3,127 @@ orbs:
   cloudfoundry: circleci/cloudfoundry@0.1.12
   slack:        circleci/slack@0.1.0
   saucelabs:    saucelabs/sauce-connect@1.0.1
-  maven:        circleci/maven@dev:eddie
+  maven:        
+    executors:
+      maven:
+        description: The docker container to use when running Maven builds
+        docker:
+          - image: circleci/openjdk:8-jdk-node
+
+    commands:
+      with_cache:
+        description: |
+          Run a set of steps with Maven dependencies cached.
+
+          This command will first restore a cache of maven dependencies, if one was
+          saved by a previous build. The provided `steps` will then be executed, and
+          if successful, then a fresh cache will be saved, if required.
+
+          The contents of the `~/.m2` directory is cached, which will substantially
+          improve build times for projects with many dependencies.
+
+          The cache-key is generated from any files named `pom.xml` that are
+          present in the `working_directory`.
+        parameters:
+          steps:
+            type: steps
+        steps:
+          - run:
+              name: Generate Cache Checksum
+              command: find . -name 'pom.xml' -exec cat {} + | shasum | awk '{print $1}' > /tmp/maven_cache_seed
+          - restore_cache:
+              key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+          - run:
+              name: Install Dependencies
+              command: mvn dependency:go-offline
+          - steps: << parameters.steps >>
+          - save_cache:
+              paths:
+                - ~/.m2
+              key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+      process_test_results:
+        description: |
+          Upload test results.
+
+          This will populate the Test Summary tab in the CircleCI UI. By default it will
+          look in `target/surefire-reports` (the default location for maven test results).
+          You can override where to find the test results with the path parameter.
+        parameters:
+          test_results_path:
+            type: string
+        steps:
+          - store_test_results:
+              path: << parameters.test_results_path >>
+
+    jobs:
+      test:
+        description: |
+          Checkout, build, test, and upload test results for a Maven project.
+        executor: <<parameters.executor>>
+        parallelism: <<parameters.parallelism>>
+        parameters:
+          executor:
+            description: The name of custom executor to use
+            type: executor
+            default: maven
+          command:
+            description: The maven command to run.
+            type: string
+            default: verify
+          test_results_path:
+            description: The path to the test results.
+            type: string
+            default: target/surefire-reports
+          parallelism:
+            description: If you wish to run tests in parallel, set a higher value.
+            type: integer
+            default: 1
+          parallel:
+            description: If you wish to run tests in parallel, must be true to split tests
+            type: boolean
+            default: false
+          parallel_test_pattern:
+            description: If you wish to run tests in parallel, what ant-glob style path matches the tests to be split? Defaults to all classes in src/test/java ending in 'Tests'
+            type: string
+            default: "src/test/java/**/*Test*.java"
+          parallel_it_pattern:
+            description: If you wish to run tests in parallel, what ant-glob style path matches the tests to be split? Defaults to all classes in src/test/java ending in 'Tests'
+            type: string
+            default: "src/test/java/**/*IT*.java"
+
+        environment:
+          TEST_PATTERN: <<parameters.parallel_test_pattern>>
+          IT_PATTERN: <<parameters.parallel_it_pattern>>
+        steps:
+          - checkout 
+          - when:
+              condition: << parameters.parallel >>
+              steps:
+                - run:
+                    name: Enable Test Splitting
+                    command: |
+                      mkdir -p .circleci/tests/
+                      circleci tests glob <<parameters.parallel_test_pattern>> | circleci tests split --split-by=timings --timings-type=filename > .circleci/tests/index_test_list.txt
+                      circleci tests glob <<parameters.parallel_it_pattern>> | circleci tests split --split-by=timings --timings-type=filename > .circleci/tests/index_it_list.txt
+                - store_artifacts:
+                    path: .circleci/tests/
+
+          - with_cache:
+              steps:
+                - run:
+                    name: Run Tests
+                    command: mvn << parameters.command >> <<# parameters.parallel >> -Dsurefire.includesFile=.circleci/tests/index_test_list.txt -Dfailsafe.includesFile=.circleci/tests/index_it_list.txt <</ parameters.parallel >>
+          - process_test_results:
+              test_results_path: << parameters.test_results_path >>
+
+
+
+
+
+
+
+
+
 
 executors:
   my-excutor:
