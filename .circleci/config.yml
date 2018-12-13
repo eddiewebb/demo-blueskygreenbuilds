@@ -106,7 +106,7 @@ jobs:
             - run: mvn test -B -Dtest=$SPLIT_TESTS
       - run:
           name: Collect Code Cov
-          run: |
+          command: |
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
             ./mvnw jacoco:report #convert binary jacoco.exec to XML in target/site/jacoco
