@@ -8,7 +8,10 @@ Technologies covered:
 - Static Code Analysis with SonarQube
 - Manual Approval/Promotion
 - Blue/Green (zero downtime) Deployments with Cloud Foundry.
-[![CircleCI](https://circleci.com/gh/eddiewebb/demo-blueskygreenbuilds.svg?style=svg)](https://circleci.com/gh/eddiewebb/demo-blueskygreenbuilds)[![Maintainability](https://api.codeclimate.com/v1/badges/4c9bacea44f3d3993256/maintainability)](https://codeclimate.com/github/eddiewebb/demo-blueskygreenbuilds/maintainability)[![Test Coverage](https://api.codeclimate.com/v1/badges/4c9bacea44f3d3993256/test_coverage)](https://codeclimate.com/github/eddiewebb/demo-blueskygreenbuilds/test_coverage)
+
+[![CircleCI](https://circleci.com/gh/eddiewebb/demo-blueskygreenbuilds.svg?style=svg)](https://circleci.com/gh/eddiewebb/demo-blueskygreenbuilds)
+[![Maintainability](https://api.codeclimate.com/v1/badges/4c9bacea44f3d3993256/maintainability)](https://codeclimate.com/github/eddiewebb/demo-blueskygreenbuilds/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/4c9bacea44f3d3993256/test_coverage)](https://codeclimate.com/github/eddiewebb/demo-blueskygreenbuilds/test_coverage)
 
 ##  Testing
 To test simple UI functionality we're using Spring Boot's test starter and SauceLabs Connect Tunnel binaries driven through Selenium's `WebDriver` interface.  The use of SauceLabs let's us run several browser combinations in parallel.
