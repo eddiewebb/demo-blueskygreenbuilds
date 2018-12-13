@@ -26,3 +26,4 @@ demo.iml
 target/
 Pipfile Pipfile.lock
 Pipfile*
+coverage/

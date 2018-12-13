@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  *  This class has slow tests, and if timing is working, should get a dedicated node while circleci gives all other classes to parrallel node.
  */
-public class SplittingTestATests {
+public class AClassOfVerySlowTests {
 
 
     @Test
@@ -19,13 +19,13 @@ public class SplittingTestATests {
     }
 
     @Test
-    public void testThatTakesThreeSeconds() throws Exception {
-        Thread.sleep(3000);
+    public void testThatTakesOneHalfSeconds() throws Exception {
+        Thread.sleep(500);
     }
 
     @Test
-    public void testThatTakesFourSeconds() throws Exception {
-        Thread.sleep(4000);
+    public void testThatTakesOneQuarterSeconds() throws Exception {
+        Thread.sleep(250);
     }
 
 
