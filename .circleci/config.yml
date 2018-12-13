@@ -104,6 +104,15 @@ jobs:
       - maven/with_cache:
           steps: 
             - run: mvn test -B -Dtest=$SPLIT_TESTS
+      - run:
+          name: Collect Code Cov
+          run: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+            ./mvnw jacoco:report #convert binary jacoco.exec to XML in target/site/jacoco
+            JACOCO_SOURCE_PATH="src/main/java"
+            ./cc-test-reporter format-coverage -t jacoco  target/site/jacoco/jacoco.xml
+            ./cc-test-reporter sum-coverage --output - --parts $CIRCLE_NODE_TOTAL coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
       - store_test_results:
           path: target/surefire-reports
       - store_artifacts:
