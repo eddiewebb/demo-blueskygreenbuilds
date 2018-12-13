@@ -19,9 +19,9 @@ workflows:
           name: "Unit Test"
           executor: my-excutor
           command: "test -B"
-          parallelism: "2"
+          parallelism: 2
           parallel: true
-      #- "Unit Test"
+
       - sum-coverage:
           requires:
             - "Unit Test"
