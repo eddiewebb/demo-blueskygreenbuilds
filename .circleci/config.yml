@@ -10,10 +10,7 @@ workflows:
   version: 2
   build_deploy:
     jobs:
-      - maven/test:
-          name: "Unit Test"
-          command: 'package -B test'
-
+      - "Unit Test"
       - saucelabs/with_proxy:
           name: "Chrome Tests"
           requires:
@@ -94,6 +91,24 @@ workflows:
 
 
 jobs:
+  "Unit Test":
+    docker:
+      - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
+    working_directory: ~/repo
+    parallelism: 2
+    steps:
+      - checkout
+      - run: | # comments -->                                                      remove path prefix and extension,  change path slashed to dot classname        must run these inside command substituion to remove trailing newline
+          class_argument=$( echo -n $(circleci tests glob src/test/java/com/edwardawebb/circleci/demo/*.java |  sed -e 's#^src/test/java/\(.*\)\.java#\1#' | tr "/" "."  | circleci tests split --split-by=timings --timings-type=classname) | tr ' ' ',')
+          echo "export SPLIT_TESTS=$class_argument" >> $BASH_ENV
+      - maven/with_cache:
+          steps: 
+            - run: mvn test -B -Dtest=$SPLIT_TESTS
+      - store_test_results:
+          path: target/surefire-reports
+      - store_artifacts:
+          path: target/surefire-reports
+
   package-jar:
     docker:
       - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
