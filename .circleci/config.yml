@@ -134,7 +134,6 @@ jobs:
             chmod +x ./cc-test-reporter
             ./cc-test-reporter sum-coverage --output - --parts $PARTS coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
      
-
   package-jar:
     docker:
       - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
