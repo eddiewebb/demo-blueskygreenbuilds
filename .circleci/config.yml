@@ -102,9 +102,24 @@ orbs:
                 - run:
                     name: Enable Test Splitting
                     command: |
+                      # READ THIS
+                      # Caveat 1) CircleCI Test Splitting usese filename by default, but Java JUnit reports do not use filenames, they use classnames.
+                      #           Forunately the tranlation is very standard since conflicting file/classnames won't compile.
+                      # Caveat 2) Surefire and Failsafe both append <includes> (which can come from parent projects) to any -DincludeFIles argument (meaning it would still run all tests on every node)
+                      #           The solution to this is to generate an exclusion list, that is tests being run on the other nodes, and pass that to sirefire/failsafe
+                      # Debugging We place all decision files in .circleci/tests and export it as an artifact for inspection/debugging.
+
                       mkdir -p .circleci/tests/
-                      circleci tests glob <<parameters.parallel_test_pattern>> | circleci tests split --split-by=timings --timings-type=filename > .circleci/tests/index_test_list.txt
-                      circleci tests glob <<parameters.parallel_it_pattern>> | circleci tests split --split-by=timings --timings-type=filename > .circleci/tests/index_it_list.txt
+                      
+                      # genrate excludes surefire tests using provided pattern
+                      circleci tests glob <<parameters.parallel_test_pattern>> | sed -e 's#^src/test/java/\(.*\)\.java#\1#' | tr "/" "." > .circleci/tests/surefire_classnames
+                      cat .circleci/tests/surefire_classnames | circleci tests split --split-by=timings --timings-type=filename > /tmp/this_node_tests
+                      cat .circleci/tests/surefire_classnames | grep -xvf /tmp/this_node_tests > .circleci/tests/surefire_classnames_ignore_list
+
+                      #generate excluded failsafe tests using provided pattern
+                      circleci tests glob <<parameters.parallel_it_pattern>> | | sed -e 's#^src/test/java/\(.*\)\.java#\1#' | tr "/" "." > .circleci/tests/failsafe_classnames
+                      cat .circleci/tests/failsafe_classnames | circleci tests split --split-by=timings --timings-type=filename > /tmp/this_node_it_tests
+                      cat .circleci/tests/failsafe_classnames |  grep -xvf /tmp/this_node_it_tests > .circleci/tests/failsafe_classnames_ignore_list
                 - store_artifacts:
                     path: .circleci/tests/
 
@@ -112,7 +127,7 @@ orbs:
               steps:
                 - run:
                     name: Run Tests
-                    command: mvn << parameters.command >> <<# parameters.parallel >> -Dsurefire.includesFile=.circleci/tests/index_test_list.txt -Dfailsafe.includesFile=.circleci/tests/index_it_list.txt <</ parameters.parallel >>
+                    command: mvn << parameters.command >> <<# parameters.parallel >> -Dsurefire.excludesFile=.circleci/tests/surefire_classnames_ignore_list -Dfailsafe.excludesFile=.circleci/tests/failsafe_classnames_ignore_list <</ parameters.parallel >>
           - process_test_results:
               test_results_path: << parameters.test_results_path >>
 
