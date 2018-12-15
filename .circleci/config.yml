@@ -19,7 +19,7 @@ workflows:
     jobs:
       - maven/parallel_test:
           name: "Unit Test"
-          executor: my-excutor
+          #executor: my-excutor
           command: "test -B"
           post-steps:
             - run:
