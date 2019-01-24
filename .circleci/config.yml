@@ -38,25 +38,25 @@ workflows:
       - sum-coverage:
           requires:
             - "Unit Test"
-      #- saucelabs/with_proxy:
-      #    name: "Chrome Tests"
-      #    requires:
-      #      - "Unit Test"
-      #    tunnel_identifier: chrome
-      #    steps:
-      #      - maven/with_cache:
-      #          steps:
-      #            - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.tunnel="chrome" 
-#
-      #- saucelabs/with_proxy:
-      #    name: "IE Tests"
-      #    requires:
-      #      - "Unit Test"
-      #    tunnel_identifier: ie
-      #    steps:
-      #      - maven/with_cache:
-      #          steps:
-      #            - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.version=11.103 -Dsauce.tunnel="ie" -Dsauce.browser="internet explorer" 
+      - saucelabs/with_proxy:
+          name: "Chrome Tests"
+          requires:
+            - "Unit Test"
+          tunnel_identifier: chrome
+          steps:
+            - maven/with_cache:
+                steps:
+                  - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.tunnel="chrome" 
+
+      - saucelabs/with_proxy:
+          name: "IE Tests"
+          requires:
+            - "Unit Test"
+          tunnel_identifier: ie
+          steps:
+            - maven/with_cache:
+                steps:
+                  - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.version=11.103 -Dsauce.tunnel="ie" -Dsauce.browser="internet explorer" 
      
       - maven/test:
           name: "Static Analysis"
