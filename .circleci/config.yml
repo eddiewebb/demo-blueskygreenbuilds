@@ -98,8 +98,8 @@ workflows:
           type: approval
           requires:
             - cloudfoundry/dark_deploy
-         #   - "IE Tests"
-         #   - "Chrome Tests"
+            - "IE Tests"
+            - "Chrome Tests"
           filters:
             branches:
               only: master
