@@ -45,7 +45,7 @@ workflows:
 
 
 
-version: 2
+version: 2.1
 jobs:
   unit-test:
     docker:
