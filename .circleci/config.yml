@@ -1,43 +1,15 @@
-version: 2.1
-orbs:
-  cloudfoundry: circleci/cloudfoundry@0.1.12
-  slack:        circleci/slack@1.0.0
-  saucelabs:    saucelabs/sauce-connect@1.0.1
-  maven:        circleci/maven@0.0.4
-
 workflows:
   version: 2
-  build_deploy:
+  build-deploy:
     jobs:
       - unit-test
-      - sum-coverage:
+      - test-chrome:
           requires:
             - unit-test
-      - saucelabs/with_proxy:
-          name: "Chrome Tests"
+      - test-ie:
           requires:
             - unit-test
-          tunnel_identifier: chrome
-          steps:
-            - maven/with_cache:
-                steps:
-                  - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.tunnel="chrome" 
-      - saucelabs/with_proxy:
-          name: "IE Tests"
-          requires:
-            - unit-test
-          tunnel_identifier: ie
-          steps:
-            - maven/with_cache:
-                steps:
-                  - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.version=11.103 -Dsauce.tunnel="ie" -Dsauce.browser="internet explorer"    
-      - maven/test:
-          name: "Static Analysis"
-          command: 'clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar 
-                     -Dsonar.host.url=https://sonarcloud.io 
-                     -Dsonar.organization=circleci-demo 
-                     -Dsonar.login=${SONAR_KEY} 
-                     -Dsonar.branch.name=${CIRCLE_BRANCH}'
+      - SCA:
           requires:
             - unit-test
       - package-jar:
@@ -46,117 +18,187 @@ workflows:
           filters:
             branches:
               only: master
-
-      - cloudfoundry/dark_deploy:
+      - dark-deploy:
           requires:
             - package-jar
           filters:
             branches:
-              only: master
+              only: master          
           context: Demos-Context
-          appname: blueskygreenbuilds
-          org: eddies-org
-          space: circleci
-          workspace_path: /tmp
-          manifest: /tmp/cf-manifest.yml
-          package: /tmp/standalone-app.jar
-          domain: blueskygreenbuilds.com
-          validate_steps:
-            - slack/notify:
-                message: "The latest inventory is ready to ship, please review/approve ASAP! https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}"
-                mentions: UA8FDUL8P
 
       - hold:
           type: approval
           requires:
-            - cloudfoundry/dark_deploy
-            - "IE Tests"
-            - "Chrome Tests"
+            - dark-deploy
+            - test-ie
+            - test-chrome
           filters:
             branches:
               only: master
-              
-      - cloudfoundry/live_deploy:
+      - live-deploy:
           requires:
             - hold
           filters:
             branches:
               only: master
           context: Demos-Context
-          appname: blueskygreenbuilds
-          org: eddies-org
-          space: circleci
-          domain: blueskygreenbuilds.com
 
 
 
+
+version: 2
 jobs:
   unit-test:
     docker:
-      - image: circleci/openjdk:8
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/repo
     parallelism: 2
+    resource_class: large
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-mvn-V2
+      - run: mvn --batch-mode dependency:go-offline 
       - run:
-          name: Enable Test Splitting
+          name: Build and *unit* test
           command: |
-            mkdir -p .circleci/tests/
-
-            # generate excluded surefire tests using provided pattern
-            circleci tests glob src/test/java/**/*Test*.java | \
-              sed -e 's#^src/test/java/\(.*\)\.java#\1#' | \
-              tr "/" "." > .circleci/tests/surefire_classnames
-            cat .circleci/tests/surefire_classnames | \
-              circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
-            cat .circleci/tests/surefire_classnames | \
-              grep -xvf /tmp/this_node_tests > .circleci/tests/surefire_classnames_ignore_list
-      - store_artifacts:
-          path: .circleci/tests/
-      - maven/with_cache:
-          steps:
-            - run:
-                name: Run Tests
-                command: mvn test -B -Dsurefire.excludesFile=.circleci/tests/surefire_classnames_ignore_list 
-      - maven/process_test_results:
-          test_results_path: target/surefire-reports
-      - run:
-          name: Collect Code Cov
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-            ./mvnw jacoco:report #convert binary jacoco.exec to XML in target/site/jacoco
-            export JACOCO_SOURCE_PATH="src/main/java"
-            ./cc-test-reporter format-coverage -t jacoco  target/site/jacoco/jacoco.xml -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
-      - persist_to_workspace:
-          root: coverage
+            mvn test -B  #run your tests
+      - save_cache:
           paths:
-            - codeclimate.*.json
-    
-  sum-coverage:
+            - ~/.m2
+          key: blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+      - store_test_results:
+          path: target/surefire-reports
+
+
+  test-chrome:
     docker:
-      - image: circleci/node:10
-        environment:
-          PARTS: 2
+      - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo
     steps:
-      - attach_workspace:
-          at: coverage
+      - checkout
+      - restore_cache:
+          keys:
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-mvn-V2
+
+      - run: mvn dependency:go-offline
+
       - run:
-          name: Aggregate Code Coverage
+          name: Start SauceLabs Tunnel (required if testing on CircleCI container)
           command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-            ./cc-test-reporter sum-coverage --output - --parts $PARTS coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
-     
+            : ${SAUCELABS_USER:?"Required Env Variable not found!"}
+            : ${SAUCELABS_KEY:?"Required Env Variable not found!"}
+            curl https://saucelabs.com/downloads/sc-4.4.12-linux.tar.gz -o saucelabs.tar.gz
+            tar -xzf saucelabs.tar.gz
+            cd sc-*
+            # startup saucelabs tunnel as background task (its a blocking command)
+            bin/sc -u ${SAUCELABS_USER} -k ${SAUCELABS_KEY} -i chrome &
+            #wait for sauce tunnel up to 1 minute
+            wget --retry-connrefused --no-check-certificate -T 60 localhost:4445
+
+      - run:
+          name: Build and Integration test
+          command: |
+            mvn verify -B -Dspring.profiles.active=it -Dsauce.browser=chrome  -Dsauce.tunnel="chrome" #package and run your browser tests
+            killall sc #kill saucelabs tunnel
+      - save_cache:
+          paths:
+           - ~/.m2
+          key: blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+
+
+  test-ie:
+    docker:
+      - image: circleci/openjdk:8-jdk-browsers
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-mvn-V2
+
+      - run: mvn dependency:go-offline
+
+      - run:
+          name: Start SauceLabs Tunnel (required if testing on CircleCI container)
+          command: |
+            : ${SAUCELABS_USER:?"Required Env Variable not found!"}
+            : ${SAUCELABS_KEY:?"Required Env Variable not found!"}
+            curl https://saucelabs.com/downloads/sc-4.4.12-linux.tar.gz -o saucelabs.tar.gz
+            tar -xzf saucelabs.tar.gz
+            cd sc-*
+            # startup saucelabs tunnel as background task (its a blocking command)
+            bin/sc -u ${SAUCELABS_USER} -k ${SAUCELABS_KEY} -i ie &
+            #wait for sauce tunnel up to 1 minute
+            wget --retry-connrefused --no-check-certificate -T 60 localhost:4445
+
+      - run:
+          name: Build and Integration test
+          command: |
+            mvn verify -B -Dspring.profiles.active=it -Dsauce.version=11.103 -Dsauce.tunnel="ie" -Dsauce.browser="internet explorer" #package and run your browser tests
+            killall sc #kill saucelabs tunnel
+
+
+      - save_cache:
+          paths:
+           - ~/.m2
+          key: blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+
+  SCA:
+    docker:
+      - image: circleci/openjdk:8-jdk-browsers
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-sonar-mvn-{{ checksum "pom.xml" }}
+      - restore_cache:
+          key: blueskygreenbuilds-sonar
+      - run:
+          name: Static Code Analysis (SonarQube)
+          command: |
+            mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar \
+                 -Dsonar.host.url=https://sonarcloud.io \
+                 -Dsonar.organization=circleci-demo \
+                 -Dsonar.login=${SONAR_KEY} \
+                 -Dsonar.branch.name=${CIRCLE_BRANCH}
+      - save_cache:
+          paths:
+           - ~/.sonar/cache
+          key: blueskygreenbuilds-sonar
+      - save_cache:
+          paths:
+           - ~/.m2
+          key: blueskygreenbuilds-sonar-mvn-{{ checksum "pom.xml" }}
+
+
+
+
   package-jar:
     docker:
-      - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
+      - image: circleci/openjdk:8-jdk-browsers
     working_directory: ~/repo
     steps:
       - checkout
-      - maven/with_cache:
-          steps: 
-            - run: mvn package -B -DskipTests=true
+      - restore_cache:
+          keys:
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-mvn-V2
+      - run: mvn dependency:go-offline
+      - save_cache:
+          paths:
+           - ~/.m2
+          key: blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+      - run:
+          name: Package Jar
+          command: |
+            mvn package -B -DskipTests=true
       - run:
           name: Copy deployment artifacts to workspace
           command: |
@@ -171,3 +213,91 @@ jobs:
           paths:
             - standalone-app.jar
             - cf-manifest.yml
+
+
+  dark-deploy:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/deploy
+    steps:
+      # why rebuild something we already tested, rebuilding invalidates any previous confidence?!
+      - attach_workspace:
+          at: /tmp
+
+      #- run: queueBuildUntilFrontOfLine 5 #do not run parallel deployments
+      - run:
+          name: Setup CF CLI
+          command: |
+            curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
+            sudo dpkg -i cf-cli_amd64.deb
+            cf -v
+            cf api https://api.run.pivotal.io
+            cf auth $CF_USER $CF_PASSWORD
+            cf target -o eddies-org -s circleci
+
+      - run:
+          name: CF Deploy
+          command: |
+            # Copy deployable jar and CF Manifest to current dir
+            cp /tmp/standalone-app.jar .
+            cp /tmp/cf-manifest.yml .
+            cf push --no-start blueskygreenbuilds-dark -f cf-manifest.yml -p standalone-app.jar -n dark -d blueskygreenbuilds.com
+            cf set-env blueskygreenbuilds-dark circle_build_num ${CIRCLE_BUILD_NUM}
+            cf set-env blueskygreenbuilds-dark circle_commit ${CIRCLE_SHA1}
+            cf set-env blueskygreenbuilds-dark circle_workflow_guid ${CIRCLE_WORKFLOW_ID}
+            cf set-env blueskygreenbuilds-dark circle_user ${CIRCLE_PROJECT_USERNAME}
+            cf set-env blueskygreenbuilds-dark circle_repo ${CIRCLE_PROJECT_REPONAME}
+
+
+            # Push as "dark" instance (URL in manifest)
+            cf start blueskygreenbuilds-dark
+            # Ensure dark route is exclusive to dark app
+            cf unmap-route blueskygreenbuilds blueskygreenbuilds.com -n dark || echo "Already exclusive"
+            # Verify new version is working on dark URL.
+            HTTPCODE=`curl -s -o /dev/null -w "%{http_code}" http://dark.blueskygreenbuilds.com/`
+            if [ "$HTTPCODE" -ne 200 ];then
+              echo "dark route note available, failing deploy"
+              exit 1
+            fi
+
+
+  live-deploy:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/deploy
+    steps:
+      # why rebuild something we already tested, rebuilding invalidates any previous confidence?!
+      - attach_workspace:
+          at: /tmp
+
+      #- run: queueBuildUntilFrontOfLine 5 #do not run parallel deployments
+      - run:
+          name: Setup CF CLI
+          command: |
+            curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
+            sudo dpkg -i cf-cli_amd64.deb
+            cf -v
+            cf api https://api.run.pivotal.io
+            cf auth $CF_USER $CF_PASSWORD
+            cf target -o eddies-org -s circleci
+
+      - run:
+          name: Re-route live Domain to latest
+          command: |
+            # Verify new version is working on dark URL.
+            HTTPCODE=`curl -s -o /dev/null -w "%{http_code}" http://dark.blueskygreenbuilds.com/`
+            if [ "$HTTPCODE" -ne 200 ];then
+              echo "dark route note available, failing deploy"
+              exit 1
+            fi
+            # Send "real" url to new version
+            cf map-route blueskygreenbuilds-dark blueskygreenbuilds.com -n www
+            sleep 15  # give time to demo round robin
+            # Stop sending traffic to previous version
+            cf unmap-route blueskygreenbuilds blueskygreenbuilds.com -n www
+            # stop previous version
+            cf stop blueskygreenbuilds
+            # delete previous version
+            cf delete blueskygreenbuilds -f
+            # Switch name of "dark" version to claim correct name
+            cf rename blueskygreenbuilds-dark blueskygreenbuilds
