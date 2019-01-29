@@ -94,6 +94,7 @@ jobs:
   unit-test:
     docker:
       - image: circleci/openjdk:8
+    parallelism: 2
     steps:
       - checkout
       - run:
