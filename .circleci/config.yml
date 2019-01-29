@@ -3,61 +3,34 @@ orbs:
   cloudfoundry: circleci/cloudfoundry@0.1.12
   slack:        circleci/slack@1.0.0
   saucelabs:    saucelabs/sauce-connect@1.0.1
-  maven:        circleci/maven@dev:maven-parrallel-54dbece5dbe03e438a16044bb61a959da7ac5900
-
-
-
-executors:
-  my-excutor:
-    docker:
-      - image: circleci/openjdk:8
-
+  maven:        circleci/maven@0.0.4
 
 workflows:
   version: 2
   build_deploy:
     jobs:
-      - maven/parallel_test:
-          name: "Unit Test"
-          executor: my-excutor
-          command: "test -B"
-          post-steps:
-            - run:
-                name: Collect Code Cov
-                command: |
-                  curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-                  chmod +x ./cc-test-reporter
-                  ./mvnw jacoco:report #convert binary jacoco.exec to XML in target/site/jacoco
-                  export JACOCO_SOURCE_PATH="src/main/java"
-                  ./cc-test-reporter format-coverage -t jacoco  target/site/jacoco/jacoco.xml -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
-            - persist_to_workspace:
-                root: coverage
-                paths:
-                  - codeclimate.*.json
-
+      - unit-test
       - sum-coverage:
           requires:
-            - "Unit Test"
+            - unit-test
       - saucelabs/with_proxy:
           name: "Chrome Tests"
           requires:
-            - "Unit Test"
+            - unit-test
           tunnel_identifier: chrome
           steps:
             - maven/with_cache:
                 steps:
                   - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.tunnel="chrome" 
-
       - saucelabs/with_proxy:
           name: "IE Tests"
           requires:
-            - "Unit Test"
+            - unit-test
           tunnel_identifier: ie
           steps:
             - maven/with_cache:
                 steps:
-                  - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.version=11.103 -Dsauce.tunnel="ie" -Dsauce.browser="internet explorer" 
-     
+                  - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.version=11.103 -Dsauce.tunnel="ie" -Dsauce.browser="internet explorer"    
       - maven/test:
           name: "Static Analysis"
           command: 'clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar 
@@ -66,11 +39,10 @@ workflows:
                      -Dsonar.login=${SONAR_KEY} 
                      -Dsonar.branch.name=${CIRCLE_BRANCH}'
           requires:
-            - "Unit Test"
-
+            - unit-test
       - package-jar:
           requires:
-            - "Unit Test"
+            - unit-test
           filters:
             branches:
               only: master
@@ -117,7 +89,49 @@ workflows:
           domain: blueskygreenbuilds.com
 
 
+
 jobs:
+  unit-test:
+    docker:
+      - image: circleci/openjdk:8
+    parallelism: 2
+    steps:
+      - checkout
+      - run:
+          name: Enable Test Splitting
+          command: |
+            mkdir -p .circleci/tests/
+
+            # generate excluded surefire tests using provided pattern
+            circleci tests glob src/test/java/**/*Test*.java | \
+              sed -e 's#^src/test/java/\(.*\)\.java#\1#' | \
+              tr "/" "." > .circleci/tests/surefire_classnames
+            cat .circleci/tests/surefire_classnames | \
+              circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
+            cat .circleci/tests/surefire_classnames | \
+              grep -xvf /tmp/this_node_tests > .circleci/tests/surefire_classnames_ignore_list
+      - store_artifacts:
+          path: .circleci/tests/
+      - maven/with_cache:
+          steps:
+            - run:
+                name: Run Tests
+                command: mvn test -B -Dsurefire.excludesFile=.circleci/tests/surefire_classnames_ignore_list 
+      - maven/process_test_results:
+          test_results_path: target/surefire-reports
+      - run:
+          name: Collect Code Cov
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+            ./mvnw jacoco:report #convert binary jacoco.exec to XML in target/site/jacoco
+            export JACOCO_SOURCE_PATH="src/main/java"
+            ./cc-test-reporter format-coverage -t jacoco  target/site/jacoco/jacoco.xml -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
+      - persist_to_workspace:
+          root: coverage
+          paths:
+            - codeclimate.*.json
+    
   sum-coverage:
     docker:
       - image: circleci/node:10
