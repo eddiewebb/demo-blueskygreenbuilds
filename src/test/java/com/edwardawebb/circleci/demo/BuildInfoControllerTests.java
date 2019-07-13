@@ -27,7 +27,6 @@ public class BuildInfoControllerTests {
         assertThat("Build Info Is Different",returned,is(buildInfo));
         assertThat("Provided values null",returned,notNullValue());
         assertThat("Data Mismatch",returned.getCommitHash(),is(HASH));
-        //fail("Demo failing test is failing");
     }
 
 
