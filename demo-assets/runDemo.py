@@ -26,7 +26,7 @@ def main():
     commitLocalChangeAgainstIssue(branch,issue,"Breaks issue #" + str(issue['number']) + " with failing test.")
     pr=openPullRequestAgainstBranch(branch,issue)
     print("PR: " + pr['html_url'] + " created")
-    input("Press Enter to commit fix...")
+    foo=input("Press Enter to commit fix...")
     commentTestFailure()
     commitLocalChangeAgainstIssue(branch,issue,"Fixes issue #" + str(issue['number']) + ", tests passing.")
     print("PR: " + pr['html_url'] + " will be closed if still open")
@@ -100,6 +100,7 @@ def uncommentTestFailure():
 
 
 def commentTestFailure():
+    print("comment")
     with open(test_case, "r") as sources:
         lines = sources.readlines()
     with open(test_case, "w") as sources:
