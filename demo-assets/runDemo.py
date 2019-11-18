@@ -100,7 +100,6 @@ def uncommentTestFailure():
 
 
 def commentTestFailure():
-    print("comment")
     with open(test_case, "r") as sources:
         lines = sources.readlines()
     with open(test_case, "w") as sources:
