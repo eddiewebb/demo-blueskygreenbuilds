@@ -30,7 +30,7 @@ def main():
     commentTestFailure()
     commitLocalChangeAgainstIssue(branch,issue,"Fixes issue #" + str(issue['number']) + ", tests passing.")
     print("PR: " + pr['html_url'] + " will be closed if still open")
-    input("Press enter to checkout latest from master (reset)")
+    raw_input("Press enter to checkout latest from master (reset)")
     mergePullRequestIfOpen(pr)
     revertToKnownCleanState()
 
