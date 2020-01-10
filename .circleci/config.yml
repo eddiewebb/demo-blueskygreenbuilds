@@ -123,8 +123,6 @@ jobs:
   sum-coverage:
     docker:
       - image: circleci/node:10
-        environment:
-          PARTS: 2
     working_directory: ~/repo
     steps:
       - attach_workspace:
@@ -132,6 +130,10 @@ jobs:
       - run:
           name: Aggregate Code Coverage
           command: |
+            PARTS=$(curl "https://circleci.com/api/v1.1/project/github/eddiewebb/demo-blueskygreenbuilds/2047" | jq -r '.circle_yml.string' | yq read - jobs."Unit Test".parallelism)
+            if [ "$PARTS" = "null" ]; then 
+              PARTS=1
+            fi
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
             ./cc-test-reporter sum-coverage --output - --parts $PARTS coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
