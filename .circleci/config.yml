@@ -3,7 +3,7 @@ orbs:
   cloudfoundry: circleci/cloudfoundry@0.1.12
   slack:        circleci/slack@0.1.0
   saucelabs:    saucelabs/sauce-connect@1.0.1
-  maven:        circleci/maven@dev:staging-b4a04811972993c043826935ccdc9f7aa732fa9e
+  maven:        circleci/maven@0.0.12
 
 
 
