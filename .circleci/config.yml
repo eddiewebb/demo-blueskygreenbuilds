@@ -17,6 +17,7 @@ workflows:
   version: 2
   build_deploy:
     jobs:
+        # maven "parellelt_Test" defauts to 2 nodes
       - maven/parallel_test:
           name: "Unit Test"
           #executor: my-excutor
