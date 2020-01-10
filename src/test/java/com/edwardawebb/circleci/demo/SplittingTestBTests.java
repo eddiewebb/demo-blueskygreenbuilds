@@ -7,22 +7,22 @@ public class SplittingTestBTests {
 
     @Test
     public void testThatTakesOneTenthSeconds() throws Exception {
-        Thread.sleep(100);
+        Thread.sleep(1000);
     }
 
     @Test
     public void testThatTakesTwoTenthSeconds() throws Exception {
-        Thread.sleep(200);
+        Thread.sleep(2000);
     }
 
     @Test
     public void testThatTakesThreeTenthSeconds() throws Exception {
-        Thread.sleep(300);
+        Thread.sleep(3000);
     }
 
     @Test
     public void testThatTakesFourTenthSeconds() throws Exception {
-        Thread.sleep(400);
+        Thread.sleep(4000);
     }
 
 
