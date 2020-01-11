@@ -146,12 +146,12 @@ jobs:
       - run:
           name: Aggregate Code Coverage
           command: |
-            curl -L https://github.com/030/go-yq/releases/download/2.1.2/go-yq_2.1.2-0.deb -o go-yq.deb && \
-            sudo apt -y install ./go-yq.deb
-            sudo ln -s /usr/local/bin/go-yq /usr/local/bin/yq
-            PARTS=$(yq '.jobs."Unit Test".parallelism' .circleci/config.yml)
+            sudo add-apt-repository ppa:rmescandon/yq
+            sudo apt update
+            sudo apt install yq -y
+            PARTS=$(curl "https://circleci.com/api/v1.1/project/github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}" | jq -r '.circle_yml.string' | yq read - 'jobs."Unit Test".parallelism')
             echo "parallelism set to: $PARTS"
-            if [ "$PARTS" = "<nil>" ]; then 
+            if [ "$PARTS" = "null" ]; then 
               echo "Set previous parallelism to 1"
               PARTS=1
             fi

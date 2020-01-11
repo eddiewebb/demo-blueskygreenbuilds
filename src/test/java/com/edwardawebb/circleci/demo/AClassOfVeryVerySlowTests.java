@@ -29,19 +29,10 @@ public class AClassOfVeryVerySlowTests {
     }
 
     @Test
-    public void testThatTakeFiveSeconds() throws Exception {
-        Thread.sleep(5000);
-    }
-
-    @Test
     public void testThatTakesOneSecondsAlso() throws Exception {
         Thread.sleep(1000);
     }
 
-    @Test
-    public void testThatTakesTwoSecondsAlso() throws Exception {
-        Thread.sleep(2000);
-    }
 
     @Test
     public void testThatTakesOneHalfSecondsAlso() throws Exception {
