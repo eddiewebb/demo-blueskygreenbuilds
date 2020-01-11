@@ -126,11 +126,11 @@ workflows:
 jobs:
   snyk-scan:
     docker:
-      - image: circleci/node:10
+      - image: cimg/openjdk:11.0
     working_directory: ~/repo
     steps:
       - checkout
-      - run: echo 'alias mvn="./mwnw" >> $BASH_ENV'
+      - run: sudo ln -s $PWD/mvnw /usr/local/bin/mvn
       - snyk/scan
 
   sum-coverage:
