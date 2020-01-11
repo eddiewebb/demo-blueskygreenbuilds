@@ -21,8 +21,9 @@ workflows:
 
       - snyk-scan
         # maven "parellelt_Test" defauts to 2 nodes
-      #- maven/parallel_test:
-      - maven/test:
+      - maven/parallel_test:
+          parallelism: 10
+      #- maven/test:
           name: "Unit Test"
           #executor: my-excutor
           command: "test -B"
