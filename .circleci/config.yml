@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
   cloudfoundry: circleci/cloudfoundry@0.1.12
-  slack:        circleci/slack@0.1.0
+  slack:        circleci/slack@1.0.0
   saucelabs:    saucelabs/sauce-connect@1.0.1
   maven:        circleci/maven@0.0.12
   snyk:         snyk/snyk@0.0.8
@@ -18,7 +18,6 @@ workflows:
   version: 2
   build_deploy:
     jobs:
-
       - snyk-scan
         # maven "parellelt_Test" defauts to 2 nodes
       #- maven/parallel_test:
@@ -40,30 +39,27 @@ workflows:
                 root: coverage
                 paths:
                   - codeclimate.*.json
-
       - sum-coverage:
           requires:
-            - "Unit Test"
+            - Unit Test
       - saucelabs/with_proxy:
           name: "Chrome Tests"
           requires:
-            - "Unit Test"
+            - Unit Test
           tunnel_identifier: chrome
           steps:
             - maven/with_cache:
                 steps:
                   - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.tunnel="chrome" 
-
       - saucelabs/with_proxy:
           name: "IE Tests"
           requires:
-            - "Unit Test"
+            - Unit Test
           tunnel_identifier: ie
           steps:
             - maven/with_cache:
                 steps:
-                  - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.version=11.103 -Dsauce.tunnel="ie" -Dsauce.browser="internet explorer" 
-     
+                  - run: ./mvnw verify -B -Dspring.profiles.active=it -Dsauce.version=11.103 -Dsauce.tunnel="ie" -Dsauce.browser="internet explorer"    
       - maven/test:
           name: "Static Analysis"
           command: 'clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar 
@@ -72,11 +68,10 @@ workflows:
                      -Dsonar.login=${SONAR_KEY} 
                      -Dsonar.branch.name=${CIRCLE_BRANCH}'
           requires:
-            - "Unit Test"
-
+            - Unit Test
       - package-jar:
           requires:
-            - "Unit Test"
+            - Unit Test
           filters:
             branches:
               only: master
@@ -124,6 +119,7 @@ workflows:
           domain: blueskygreenbuilds.com
 
 
+
 jobs:
   snyk-scan:
     docker:
@@ -134,7 +130,6 @@ jobs:
       - run: sudo ln -s $PWD/mvnw /usr/local/bin/mvn
       - snyk/scan:
           fail-on-issues: false
-
   sum-coverage:
     docker:
       - image: cimg/base:stable
