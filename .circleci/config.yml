@@ -131,7 +131,8 @@ jobs:
     steps:
       - checkout
       - run: sudo ln -s $PWD/mvnw /usr/local/bin/mvn
-      - snyk/scan
+      - snyk/scan:
+          fail-on-issues: false
 
   sum-coverage:
     docker:
