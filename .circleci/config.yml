@@ -119,6 +119,8 @@ jobs:
                 command: mvn test -B -Dsurefire.excludesFile=.circleci/tests/surefire_classnames_ignore_list 
       - maven/process_test_results:
           test_results_path: target/surefire-reports
+      - store_artifacts:
+          path: target/surefire-reports/junit
       - run:
           name: Collect Code Cov
           command: |
