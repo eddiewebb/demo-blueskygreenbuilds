@@ -26,11 +26,11 @@ def main():
     commitLocalChangeAgainstIssue(branch,issue,"Breaks issue #" + str(issue['number']) + " with failing test.")
     pr=openPullRequestAgainstBranch(branch,issue)
     print("PR: " + pr['html_url'] + " created")
-    raw_input("Press Enter to commit fix...")
+    input("Press Enter to commit fix...")
     commentTestFailure()
     commitLocalChangeAgainstIssue(branch,issue,"Fixes issue #" + str(issue['number']) + ", tests passing.")
     print("PR: " + pr['html_url'] + " will be closed if still open")
-    raw_input("Press enter to checkout latest from master (reset)")
+    input("Press enter to checkout latest from master (reset)")
     mergePullRequestIfOpen(pr)
     revertToKnownCleanState()
 
