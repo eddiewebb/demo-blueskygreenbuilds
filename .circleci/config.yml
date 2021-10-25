@@ -9,7 +9,8 @@ workflows:
   version: 2
   build_deploy:
     jobs:
-      - unit-test
+      - unit-test:
+          context: Production-Only
       - sum-coverage:
           requires:
             - unit-test

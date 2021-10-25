@@ -11,9 +11,7 @@ resource "aws_launch_template" "se-demo-eks-launch-template" {
 
   ebs_optimized = true
 
-  image_id = "ami-0abbd217a24c16672"
 
-  instance_initiated_shutdown_behavior = "terminate"
 
 
   instance_type = "t2.small"

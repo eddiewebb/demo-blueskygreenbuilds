@@ -42,7 +42,7 @@ resource "aws_eks_node_group" "se-demo-node-group" {
 
   launch_template {
     name    = aws_launch_template.se-demo-eks-launch-template.name
-    version = "1"
+    version = "$Latest"
   }
   subnet_ids = [
       "subnet-ea15b081","subnet-3fb5cf73","subnet-894c5ef3"
@@ -57,7 +57,7 @@ resource "aws_eks_node_group" "se-demo-node-group" {
 
   scaling_config {
     desired_size = 2
-    max_size     = 1
+    max_size     = 2
     min_size     = 1
   }
 
@@ -77,14 +77,14 @@ resource "aws_eks_node_group" "se-demo-node-group" {
 
 resource "aws_iam_role_policy_attachment" "se-demo-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = "arn:aws:iam::660990364978:role/se-demo-EKSNodeRole"
+  role       = "se-demo-EKSNodeRole"
 }
 
 resource "aws_iam_role_policy_attachment" "se-demo-AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = "arn:aws:iam::660990364978:role/se-demo-EKSNodeRole"
+  role       = "se-demo-EKSNodeRole"
 }
 resource "aws_iam_role_policy_attachment" "se-demo-AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = "arn:aws:iam::660990364978:role/se-demo-EKSNodeRole"
+  role       = "se-demo-EKSNodeRole"
 }
