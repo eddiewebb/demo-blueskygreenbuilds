@@ -21,7 +21,7 @@ orbs:
             type: integer
             description: number of hours to scan history. NOT IMPLEMENTED
           project-token-var-name:
-            default: CCI_PROJECT_TOKEN
+            default: CIRCLE_API_KEY
             description: The local variable name for a READ ONLY project project-token
             type: env_var_name
         docker:
@@ -32,7 +32,7 @@ orbs:
               command: |
                 mkdir reports
                 # get all rcent builds
-                curl -u ${<< parameters.project-token-var-name >>}: "https://circleci.com/api/v1.1/recent-builds" > reports/recent-builds.json
+                curl -H "Circle-Token: ${<< parameters.project-token-var-name >>}" "https://circleci.com/api/v1.1/recent-builds" > reports/recent-builds.json
                 # fitler to key info
                 jq '[.[] | {build_url,branch,context_ids, user_login: .user.login, user_full_name: .user.name, user_email: .committer_email, job_id: .workflows.job_id}]' reports/recent-builds.json > summaries.json
                 # find violations using prodcution cotnext not on producuton branhc
