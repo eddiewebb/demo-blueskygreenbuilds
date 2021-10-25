@@ -43,7 +43,7 @@ orbs:
           - run:
               name: Fail build if violations found.
               command: |
-                VIOLATIONS=`jq '. | length' reports/violations.json
+                VIOLATIONS=`jq '. | length' reports/violations.json`
                 if [[ $VIOLATIONS != 0 ]]; then
                   echo "${VIOLATIONS} Context access violatinos found. Please see reports/violations.json"
                   exit 1
