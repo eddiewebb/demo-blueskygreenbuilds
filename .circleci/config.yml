@@ -21,7 +21,7 @@ orbs:
             type: integer
             description: number of hours to scan history. NOT IMPLEMENTED
           project-token-var-name:
-            default: CIRCLE_API_KEY
+            default: CIRCLECI_API_KEY
             description: The local variable name for a READ ONLY project project-token
             type: env_var_name
         docker:
