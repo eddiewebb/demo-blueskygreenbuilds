@@ -4,11 +4,53 @@ orbs:
   slack:        circleci/slack@1.0.0
   saucelabs:    saucelabs/sauce-connect@1.0.1
   maven:        circleci/maven@0.0.4
+  build-auditor:
+    jobs:
+      check_context_usage:
+        parameters:
+          production-branch: 
+            default: main
+            description: The name of the production branch. Usually main or master.
+            type: string
+          production-context-keyword:
+            default: production
+            description: any context containing this string will be consisder production
+            type: string
+          scan-period:
+            default: 24
+            type: integer
+            description: number of hours to scan history. NOT IMPLEMENTED
+        docker:
+            - image: cimg/base:stable
+        steps:
+          - run:
+              name: load previsou period build summaries
+              command: |
+                mkdir reports
+                # get all rcent builds
+                curl "https://circleci.com/api/v1.1/recent-builds" > reports/recent-builds.json
+                # fitler to key info
+                jq '[.[] | {build_url,branch,context_ids, user_login: .user.login, user_full_name: .user.name, user_email: .committer_email, job_id: .workflows.job_id}]' reports/recent-builds.json > summaries.json
+                # find violations using prodcution cotnext not on producuton branhc
+                # could be json, csv, etc.
+                jq '[.[] | select(.context_ids[] | match("<< parameters.production-context-keyword >>";"i")) |  select(.branch != "<< parameters.production-branch >>")]' > reports/violations.json
+          - store_artifacts:
+              path: reports
+          - run:
+              name: Fail build if violations found.
+              command: |
+                VIOLATIONS=`jq '. | length' reports/violations.json
+                if [[ $VIOLATIONS != 0 ]]; then
+                  echo "${VIOLATIONS} Context access violatinos found. Please see reports/violations.json"
+                  exit 1
+                fi
+          ## optinoall call slack orb, webhooks, etc.
 
 workflows:
   version: 2
   build_deploy:
     jobs:
+      - build-auditor/check_context_usage
       - unit-test:
           context: Production-Only
       - sum-coverage:
