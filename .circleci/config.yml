@@ -32,12 +32,12 @@ orbs:
               command: |
                 mkdir reports
                 # get all rcent builds
-                curl -H "Circle-Token: ${<< parameters.project-token-var-name >>}" "https://circleci.com/api/v1.1/recent-builds" > reports/recent-builds.json
+                curl -H "Circle-Token: ${<< parameters.project-token-var-name >>}" "https://circleci.com/api/v1.1/recent-builds" > recent-builds.json
                 # fitler to key info
-                jq '[.[] | {build_url,branch,context_ids, user_login: .user.login, user_full_name: .user.name, user_email: .committer_email, job_id: .workflows.job_id}]' reports/recent-builds.json > summaries.json
+                jq '[.[] | {build_url,branch,context_ids, user_login: .user.login, user_full_name: .user.name, user_email: .committer_email, job_id: .workflows.job_id}]' recent-builds.json > reports/summary.json
                 # find violations using prodcution cotnext not on producuton branhc
                 # could be json, csv, etc.
-                jq '[.[] | select(.context_ids[] | match("<< parameters.production-context-keyword >>";"i")) |  select(.branch != "<< parameters.production-branch >>")]' > reports/violations.json
+                jq '[.[] | select(.context_ids[] | match("<< parameters.production-context-keyword >>";"i")) |  select(.branch != "<< parameters.production-branch >>")]' reports/summary.json > reports/violations.json
           - store_artifacts:
               path: reports
           - run:
