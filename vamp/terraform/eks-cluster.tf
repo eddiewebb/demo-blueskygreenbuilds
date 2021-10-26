@@ -2,9 +2,7 @@ module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = local.cluster_name
   cluster_version = "1.20"
-  subnets         = [
-      "subnet-ea15b081","subnet-3fb5cf73","subnet-894c5ef3"
-  ]
+  subnets         = ["subnet-03d02b4de5a7a5f01",resource.aws_subnet.se-demo-eks-subnet-2b.id]
   tags = {
     Environment = "demo"
     owner  = "eddie@circleci.com"
@@ -12,18 +10,24 @@ module "eks" {
     expiration = "2022-12-31"
   }
 
-  vpc_id = module.vpc.vpc_id
-  cluster_create_security_group = false
-  cluster_security_group_id = "sg-0723d3661e802426c"
+  vpc_id     = module.vpc.default_vpc_id
 
+  # stop spawning lots of roles since stupid SSO permissions wont let us delete them
   manage_cluster_iam_resources = false
   cluster_iam_role_name = "se-demo-cluster-with-vamp"
 
   manage_worker_iam_resources = false
-  #iam_instance_profile_name = " se-demo-EKSNodeRole"
+  #iam_instance_profile_name = "se-demo-EKSNodeRole"
 
-  worker_create_security_group = false
-  worker_security_group_id = "sg-0723d3661e802426c"
+
+  # we can disable sg creation as well, but we ccan delete these if we go wrong.
+  #cluster_create_security_group = false
+  #cluster_security_group_id = "sg-0723d3661e802426c"
+  #worker_create_security_group = false
+  #worker_security_group_id = "sg-0723d3661e802426c"
+
+# Worker Groups are defined below as node group with custom launch template (to tag per CE policy)
+
 }
 
 data "aws_eks_cluster" "cluster" {
@@ -39,14 +43,14 @@ resource "aws_eks_node_group" "se-demo-node-group" {
   node_group_name = "se-demo-node-group-small"
   node_role_arn   = "arn:aws:iam::660990364978:role/se-demo-EKSNodeRole"
   #version = "1.17"
+  ami_type = "AL2_x86_64"
 
   launch_template {
     name    = aws_launch_template.se-demo-eks-launch-template.name
-    version = "$Latest"
+    version = aws_launch_template.se-demo-eks-launch-template.latest_version
   }
-  subnet_ids = [
-      "subnet-ea15b081","subnet-3fb5cf73","subnet-894c5ef3"
-  ]
+  #subnet_ids = module.eks.subnets[*].id
+  subnet_ids = ["subnet-03d02b4de5a7a5f01",resource.aws_subnet.se-demo-eks-subnet-2b.id]
 
   tags = {
     Environment = "demo"

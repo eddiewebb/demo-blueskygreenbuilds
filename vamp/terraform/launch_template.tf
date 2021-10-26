@@ -1,3 +1,9 @@
+
+#
+# Non-standard launch templates to support EKS, its a shit show
+# https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+#
+
 resource "aws_launch_template" "se-demo-eks-launch-template" {
   name = "se-demo-eks-launch-template"
 
@@ -14,7 +20,7 @@ resource "aws_launch_template" "se-demo-eks-launch-template" {
 
 
 
-  instance_type = "t2.small"
+  #instance_type = "t2.small"
 
 
   metadata_options {
@@ -23,8 +29,10 @@ resource "aws_launch_template" "se-demo-eks-launch-template" {
     http_put_response_hop_limit = 1
   }
 
-
-  vpc_security_group_ids = ["sg-0f908b402bbaef9d9"]
+  # even for private subnets, must have pulic IP https://github.com/aws/containers-roadmap/issues/607
+  network_interfaces {
+    associate_public_ip_address = true
+  }
  
   tag_specifications {
     resource_type = "instance"
