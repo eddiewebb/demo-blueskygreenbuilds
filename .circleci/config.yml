@@ -113,7 +113,7 @@ workflows:
 jobs:
   unit-test:
     docker:
-      - image: circleci/openjdk:8
+      - image: cimg/openjdk:17.0-browsers
     parallelism: 2
     steps:
       - checkout
@@ -170,7 +170,7 @@ jobs:
      
   package-jar:
     docker:
-      - image: circleci/openjdk:17-jdk-browsers
+      - image: cimg/openjdk:17.0-browsers
     working_directory: ~/repo
     steps:
       - checkout
@@ -194,7 +194,7 @@ jobs:
 
   package-docker:
     docker:
-      - image: circleci/openjdk:17-jdk-browsers
+      - image: cimg/openjdk:17.0-browsers
     working_directory: ~/repo
     steps:
       - checkout
