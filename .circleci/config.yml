@@ -177,7 +177,7 @@ jobs:
       - maven/with_cache:
           steps: 
             - run: |
-                mvn package -B -DskipTests=true \
+                ./mvnw package -B -DskipTests=true \
                   -Dbuild.number=${CIRCLE_BUILD_NUM} \
                   -Dcommit.hash=${CIRCLE_SHA1} \
                   -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
@@ -208,13 +208,13 @@ jobs:
           keys:
             - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
             - blueskygreenbuilds-mvn-V2
-      - run: mvn dependency:go-offline
+      - run: ./mvnw dependency:go-offline
       - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
       - run: echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
       - run:
           name: Package Docker image with Jib
           command: |
-            mvn compile jib:build -B -DskipTests=true \
+            ./mvnw compile jib:build -B -DskipTests=true \
               -Dbuild.number=${CIRCLE_BUILD_NUM} \
               -Dcommit.hash=${CIRCLE_SHA1} \
               -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
