@@ -176,7 +176,12 @@ jobs:
       - checkout
       - maven/with_cache:
           steps: 
-            - run: mvn package -B -DskipTests=true
+            - run: mvn package -B -DskipTests=true \
+              -Dbuild.number=${CIRCLE_BUILD_NUM} \
+              -Dcommit.hash=${CIRCLE_SHA1} \
+              -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
+              -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+              -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} 
       - run:
           name: Copy deployment artifacts to workspace
           command: |
@@ -208,4 +213,9 @@ jobs:
       - run:
           name: Package Docker image with Jib
           command: |
-            mvn compile jib:build -B -DskipTests=true -Dcircle_build_num=${CIRCLE_BUILD_NUM} -Dcircle_commit=${CIRCLE_SHA1} -Dcircle_workflow_guid=${CIRCLE_WORKFLOW_ID} -Dcircle_user=${CIRCLE_PROJECT_USERNAME} -Dcircle_repo=${CIRCLE_PROJECT_REPONAME}git
+            mvn compile jib:build -B -DskipTests=true \
+              -Dbuild.number=${CIRCLE_BUILD_NUM} \
+              -Dcommit.hash=${CIRCLE_SHA1} \
+              -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
+              -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+              -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} 
