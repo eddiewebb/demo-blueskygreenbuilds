@@ -27,10 +27,6 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.2.0"
 
-  #existing subnet ranges
-  private_subnets      = ["subnet-03d02b4de5a7a5f01",resource.aws_subnet.se-demo-eks-subnet-2b.id]
-  public_subnets       = ["subnet-ea15b081","subnet-3fb5cf73","subnet-894c5ef3"]
-
 
   tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
@@ -56,13 +52,13 @@ resource "aws_subnet" "se-demo-eks-subnet-2b" {
   availability_zone = "us-east-2b"
 
   tags = {
-    Name = "se-demo-eks-subnet-2b"
+    Name = "se-demo-eks-public-subnet-2b"
     Environment = "demo"
     owner  = "eddie@circleci.com"
     purpose   = "SE demos of vamp"
     expiration = "2022-12-31"
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"             = "1"
+    "kubernetes.io/role/elb"             = "1"
   }
 }
 
@@ -80,6 +76,6 @@ resource "aws_subnet" "se-demo-eks-subnet-2a" {
     purpose   = "SE demos of vamp"
     expiration = "2022-12-31"
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"             = "1"
+    "kubernetes.io/role/elb"             = "1"
   }
 }
