@@ -203,7 +203,7 @@ jobs:
             - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
             - blueskygreenbuilds-mvn-V2
       - run: mvn dependency:go-offline
-      - run: cp .mvnw/wrapper/settings.xml ~/.m2/settings.xml
+      - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
       - run: echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
       - run:
           name: Package Docker image with Jib
