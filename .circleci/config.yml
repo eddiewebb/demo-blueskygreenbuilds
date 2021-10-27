@@ -52,11 +52,20 @@ orbs:
 
 workflows:
   version: 2
-  build_deploy:
+  nightly_auditor:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only: [master]
     jobs:
       - build-auditor/check_context_usage
+    
+  build_deploy:
+    jobs:
       - unit-test:
-          context: Production-Only
+          context: Production-Only  #we'll see this is caught by nightly auditor as invalid.
       - sum-coverage:
           requires:
             - unit-test
@@ -93,48 +102,12 @@ workflows:
           filters:
             branches:
               only: master
-
-      - cloudfoundry/dark_deploy:
+      - package-docker:
           requires:
-            - package-jar
+            - unit-test
           filters:
             branches:
               only: master
-          context: Demos-Context
-          appname: blueskygreenbuilds
-          org: eddies-org
-          space: circleci
-          workspace_path: /tmp
-          manifest: /tmp/cf-manifest.yml
-          package: /tmp/standalone-app.jar
-          domain: blueskygreenbuilds.com
-          validate_steps:
-            - slack/notify:
-                message: "The latest inventory is ready to ship, please review/approve ASAP! https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}"
-                mentions: UA8FDUL8P
-
-      - hold:
-          type: approval
-          requires:
-            - cloudfoundry/dark_deploy
-            - "IE Tests"
-            - "Chrome Tests"
-          filters:
-            branches:
-              only: master
-              
-      - cloudfoundry/live_deploy:
-          requires:
-            - hold
-          filters:
-            branches:
-              only: master
-          context: Demos-Context
-          appname: blueskygreenbuilds
-          org: eddies-org
-          space: circleci
-          domain: blueskygreenbuilds.com
-
 
 
 jobs:
@@ -197,7 +170,7 @@ jobs:
      
   package-jar:
     docker:
-      - image: circleci/openjdk@sha256:76e4d88773f25ac52c3f0c63bf63b8e346ce799fbfe3691566f03d987795c70f
+      - image: circleci/openjdk:17-jdk-browsers
     working_directory: ~/repo
     steps:
       - checkout
@@ -218,3 +191,21 @@ jobs:
           paths:
             - standalone-app.jar
             - cf-manifest.yml
+
+  package-docker:
+    docker:
+      - image: circleci/openjdk:17-jdk-browsers
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - blueskygreenbuilds-mvn-V2-{{ checksum "pom.xml" }}
+            - blueskygreenbuilds-mvn-V2
+      - run: mvn dependency:go-offline
+      - run: cp .mvnw/wrapper/settings.xml ~/.m2/settings.xml
+      - run: echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+      - run:
+          name: Package Docker image with Jib
+          command: |
+            mvn compile jib:build -B -DskipTests=true -Dcircle_build_num=${CIRCLE_BUILD_NUM} -Dcircle_commit=${CIRCLE_SHA1} -Dcircle_workflow_guid=${CIRCLE_WORKFLOW_ID} -Dcircle_user=${CIRCLE_PROJECT_USERNAME} -Dcircle_repo=${CIRCLE_PROJECT_REPONAME}git

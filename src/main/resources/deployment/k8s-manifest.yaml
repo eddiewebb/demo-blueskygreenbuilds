@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blueskygreenbuilds-app
+  namespace: blueskygreenbuild
+  labels:
+    app: blueskygreenbuilds-app
+    version: 0.0.1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: blueskygreenbuilds-app
+      version: 0.0.1
+  template:
+    metadata:
+      labels:
+        app: blueskygreenbuilds-app
+        version: 0.0.1
+    spec:
+      containers:
+      - name: blueskygreenbuilds-app
+        image: eddiewebb/blueskygreenbuilds-demo:0.0.1-SNAPSHOT-b000
+        ports:
+        - containerPort: 8080
