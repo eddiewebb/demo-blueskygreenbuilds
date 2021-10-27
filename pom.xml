@@ -27,7 +27,7 @@
 		<commit.hash>local-build</commit.hash>
 		<build.user>local-build</build.user>
 		<build.repo>local-build</build.repo>
-		<circle.workflow>local-build</circle.workflow>
+		<circle.workflow.guid>local-build</circle.workflow.guid>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -92,11 +92,11 @@
 					</to>
 					<container>
 						<jvmFlags>
-							<jvmFlag>-Dcircle_build_num=${build.number}</jvmFlag>
-							<jvmFlag>-Dcircle_commit=${commit.hash}</jvmFlag>
-							<jvmFlag>-Dcircle_user=${build.user}</jvmFlag>
-							<jvmFlag>-Dcircle_repo=${build.repo}</jvmFlag>
-							<jvmFlag>-Dcircle_workflow_guid=${circle.workflow}</jvmFlag>
+							<jvmFlag>-Dbuild.number=${build.number}</jvmFlag>
+							<jvmFlag>-Dcommit.hash=${commit.hash}</jvmFlag>
+							<jvmFlag>-Dbuild.user=${build.user}</jvmFlag>
+							<jvmFlag>-Dbuild.repo=${build.repo}</jvmFlag>
+							<jvmFlag>-Dcircle.workflow.guid=${circle.workflow.guid}</jvmFlag>
 						</jvmFlags>
 						<ports>
 							<port>8080</port>
