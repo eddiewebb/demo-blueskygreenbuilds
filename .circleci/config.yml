@@ -176,12 +176,13 @@ jobs:
       - checkout
       - maven/with_cache:
           steps: 
-            - run: mvn package -B -DskipTests=true \
-              -Dbuild.number=${CIRCLE_BUILD_NUM} \
-              -Dcommit.hash=${CIRCLE_SHA1} \
-              -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
-              -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
-              -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} 
+            - run: |
+                mvn package -B -DskipTests=true \
+                  -Dbuild.number=${CIRCLE_BUILD_NUM} \
+                  -Dcommit.hash=${CIRCLE_SHA1} \
+                  -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
+                  -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+                  -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} 
       - run:
           name: Copy deployment artifacts to workspace
           command: |
