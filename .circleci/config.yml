@@ -226,7 +226,7 @@ jobs:
             kubectl config set-context cci --user=circleci --namespace=blueskygreenbuild --cluster=se-demo-eks-VlSWt4Kt
             kubectl config use-context cci
       - kubernetes/create-or-update-resource:
-          namespace: blueskygreenbuilds
+          namespace: blueskygreenbuild
           resource-file-path: modified-deployment.yaml
 
 
