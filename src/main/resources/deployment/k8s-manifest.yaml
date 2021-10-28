@@ -23,3 +23,4 @@ spec:
         image: "${FINAL_IMAGE}" #quoted since it contains colon
         ports:
         - containerPort: 8080
+        
