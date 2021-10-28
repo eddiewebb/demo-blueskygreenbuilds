@@ -20,6 +20,6 @@ spec:
     spec:
       containers:
       - name: blueskygreenbuilds-app
-        image: ${FINAL_IMAGE}
+        image: "${FINAL_IMAGE}" #quoted since it contains colon
         ports:
         - containerPort: 8080
