@@ -82,6 +82,12 @@ workflows:
           filters:
             branches:
               only: master
+      - update-deployment:
+          requires:
+            - package-docker
+          filters:
+            branches:
+              only: master
 
 
 jobs:
@@ -207,9 +213,17 @@ jobs:
           command: |
             export FINAL_VERSION=<<pipeline.number>>
             export FINAL_IMAGE=blueskygreenbuilds-demo:b${FINAL_VERSION}
-            envsubst < src/main/resources/deployment/k8s-manifest.yml > modified-deployment.yaml
+            envsubst < src/main/resources/deployment/k8s-manifest.yaml > modified-deployment.yaml
             cat modified-deployment.yaml
       - kubernetes/install-kubectl
+      - run:
+          name: Create minimal kubeconfig for Service Account
+          command: |
+            kubectl config set-cluster se-demo-eks-VlSWt4Kt --server=https://0DF7EA1E2D47EA3057B39C107F4DEADF.gr7.us-east-2.eks.amazonaws.com
+            export DECODED_TOKEN=$(echo ${SE_DEMO_CLUSTER_CCI_USER_TOKEN} | base64 -d)
+            kubectl config set-credentials circleci --token=${DECODED_TOKEN}
+            kubectl config set-context cci --user=circleci --namespace=blueskygreenbuilds --cluster=se-demo-eks-VlSWt4Kt
+            kubectl config use-context cci
       - kubernetes/create-or-update-resource:
           namespace: blueskygreenbuilds
           resource-file-path: modified-deployment.yaml
