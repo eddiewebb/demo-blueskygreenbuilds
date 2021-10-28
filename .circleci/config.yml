@@ -60,7 +60,8 @@ workflows:
             branches:
               only: [master]
     jobs:
-      - build-auditor/check_context_usage
+      - build-auditor/check_context_usage:
+          production-branch: master
     
   build_deploy:
     jobs:
