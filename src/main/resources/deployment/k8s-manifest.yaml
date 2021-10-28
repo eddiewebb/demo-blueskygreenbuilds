@@ -5,18 +5,18 @@ metadata:
   namespace: blueskygreenbuild
   labels:
     app: blueskygreenbuilds-app
-    version: ${FINAL_VERSION}
+    version: "${FINAL_VERSION}"
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: blueskygreenbuilds-app
-      version: ${FINAL_VERSION}
+      version: "${FINAL_VERSION}"
   template:
     metadata:
       labels:
         app: blueskygreenbuilds-app
-        version: ${FINAL_VERSION}
+        version: "${FINAL_VERSION}"
     spec:
       containers:
       - name: blueskygreenbuilds-app
