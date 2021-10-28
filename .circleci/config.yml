@@ -212,7 +212,7 @@ jobs:
           name: Update image & version in manifest
           command: |
             export FINAL_VERSION=<<pipeline.number>>
-            export FINAL_IMAGE=blueskygreenbuilds-demo:b${FINAL_VERSION}
+            export FINAL_IMAGE=eddiewebb/blueskygreenbuilds-demo:b${FINAL_VERSION}
             envsubst < src/main/resources/deployment/k8s-manifest.yaml > modified-deployment.yaml
             cat modified-deployment.yaml
       - kubernetes/install-kubectl
