@@ -5,7 +5,7 @@ metadata:
   namespace: blueskygreenbuild
   labels:
     app: hello-node
-    version: 0.0.1
+    version: 0.0.2
 spec:
   replicas: 2
   selector:
