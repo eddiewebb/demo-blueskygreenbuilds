@@ -20,7 +20,19 @@ spec:
     spec:
       containers:
       - name: blueskygreenbuilds
+        imagePullPolicy: Always
         image: "${FINAL_IMAGE}" #quoted since it contains colon
         ports:
         - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /build-info
+            port: http
+            scheme: HTTP
+          failureThreshold: 1
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            memory: 128Mi
         

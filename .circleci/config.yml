@@ -211,8 +211,8 @@ jobs:
       - run: 
           name: Update image & version in manifest
           command: |
-            export FINAL_VERSION=<<pipeline.number>>
-            export FINAL_IMAGE=eddiewebb/blueskygreenbuilds-demo:b${FINAL_VERSION}
+            export FINAL_VERSION=1.0.<<pipeline.number>> #vamp wants semantic version
+            export FINAL_IMAGE=eddiewebb/blueskygreenbuilds-demo:b<<pipeline.number>>
             envsubst < src/main/resources/deployment/k8s-manifest.yaml > modified-deployment.yaml
             cat modified-deployment.yaml
       - kubernetes/install-kubectl
