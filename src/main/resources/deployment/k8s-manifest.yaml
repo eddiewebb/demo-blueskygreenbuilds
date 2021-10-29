@@ -1,24 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: blueskygreenbuilds-app
+  name: blueskygreenbuilds-${FINAL_VERSION}
   namespace: blueskygreenbuild
   labels:
-    app: blueskygreenbuilds-app
-    version: "${FINAL_VERSION}"
+    app: blueskygreenbuilds
+    version: "${FINAL_VERSION}" #must be string to successfully convert to json read by kubectl.
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: blueskygreenbuilds-app
+      app: blueskygreenbuilds
+      version: "${FINAL_VERSION}"
   template:
     metadata:
       labels:
-        app: blueskygreenbuilds-app
+        app: blueskygreenbuilds
         version: "${FINAL_VERSION}"
     spec:
       containers:
-      - name: blueskygreenbuilds-app
+      - name: blueskygreenbuilds
         image: "${FINAL_IMAGE}" #quoted since it contains colon
         ports:
         - containerPort: 8080
