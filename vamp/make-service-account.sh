@@ -7,4 +7,5 @@ kubectl create clusterrolebinding ${svcuser} --clusterrole=cluster-admin --servi
 
 kubectl get secret $(kubectl get serviceaccounts ${svcuser} -o go-template='{{(index .secrets 0).name}}') -o yaml
 
+echo ""
 echo "Add the token value above to Env Vars, and add ca.crt to envvars or config (public on API)"
