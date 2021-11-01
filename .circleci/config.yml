@@ -222,11 +222,11 @@ jobs:
             export DECODED_TOKEN=$(echo ${SE_DEMO_CLUSTER_CCI_USER_TOKEN} | base64 -d)
             echo LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJeE1UQXlOakUxTlRjd04xb1hEVE14TVRBeU5ERTFOVGN3TjFvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTG5CCkQzckt1OEZoa1dLZE5RZERBRFJ3TjRhMXFUR3lBWHNkTHlXSkdKaUk1SmpSZWVvcVFLWWRRdXRyelVPNms0cjgKMy9rRFVGM1lHcjVCMlZJeUQ2eXdVc2tjL3RSK0FmbHBmSTRPZS9NdGNkdUt4VUtYUU85ZHVTMzdUN2JpeUs3bgozOE9EaWh0aEJxQ0JUL3lyK3hKRGVvNXlyM2ZkbGFvQUljNlhGam9EblUvQ0lac1NyS2VVWHVmU3NkMXJaRUpUCm82aWFnejJRdjFZVTZFcjZob0d3ZnRMa004RENWVlRZMlR1cUE1VlZKY29JK0FoNnRaOXIvcjVnWDBvZHd6QW8KWEN5VlJraWZVK3NrU3JIc1huWlVFK2FhZ0FUdWtPQzdWQVNqNFJySUcySUY3dlphTTJ6SFkzSHU4NWFrWWliSQpUME5MQVR2aDk2Ri9zeEZQYVYwQ0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZLU2tRN2hkcEVlNVNyVFBoM1dpNVV6bTRrZy9NQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFBeDF5a3RCQWMxMUlEdUMyaUlXRFFObUttUUw5L1orSlcwM3NYUTBxa042YUplZnBtRQpBeFZTaUJKMUswdEFPMGQxV0c5M2VWOVJlNzZzOXpzSkxadEgwRVdoSTVLVFhublgySlpja1o0SW5LRVBCRHB2Cm1uSzNGQmo2VGVOclY2Q2dzckYyM0ZzRm9MRUdSZTk1OURQbksvajJIMytVdk4xdHI3TUl4V3pISm1wVHF4Ni8KVHhUcS9pd3hKUXFKMXJlME9admxLcEZaTlNheVBsUm9GMXlzVXFuaU9jMlp3TjhDdzNOS2JFT0EwVlIwVFk1ego2Mk9TaUFWU1BueFFBczJnUDVOQTl0bXFnL2RSdTZDNmx2aVNjVk1UTU9UVnV4dTVSK0dFQ0hqcjlNQm1BdjVnCjBQcVV3L0FZQ3dhcGJuQXdyT2o3bldhMTlHS0NxZGlGd1hXegotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg== | base64 -d > ca.crt
             kubectl config set-cluster se-demo-eks-VlSWt4Kt --server=https://0DF7EA1E2D47EA3057B39C107F4DEADF.gr7.us-east-2.eks.amazonaws.com --certificate-authority=ca.crt
-            kubectl config set-credentials circleci --token=${DECODED_TOKEN}
-            kubectl config set-context cci --user=circleci --namespace=blueskygreenbuild --cluster=se-demo-eks-VlSWt4Kt
+            kubectl config set-credentials eddies-bot --token=${DECODED_TOKEN}
+            kubectl config set-context cci --user=eddies-bot --namespace=bsgb --cluster=se-demo-eks-VlSWt4Kt
             kubectl config use-context cci
       - kubernetes/create-or-update-resource:
-          namespace: blueskygreenbuild
+          namespace: bsgb
           resource-file-path: modified-deployment.yaml
 
 
