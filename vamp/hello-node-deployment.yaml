@@ -2,21 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-node
-  namespace: blueskygreenbuild
+  namespace: bsgb
   labels:
     app: hello-node
-    version: 0.0.2
+    version: 0.0.3
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: hello-node
-      version: 0.0.1
+      version: 0.0.3
   template:
     metadata:
       labels:
         app: hello-node
-        version: 0.0.1
+        version: 0.0.3
     spec:
       containers:
       - name: hello-node
