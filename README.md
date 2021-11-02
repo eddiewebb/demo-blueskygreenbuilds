@@ -4,10 +4,11 @@ Build, Test and Deploy a modern webapp using CircleCI.
 
 Technologies covered:
 - Build a Spring Boot app with Maven (and caching maven repos!)
-- Browser testing with Selenium and Saucelabs
-- Static Code Analysis with SonarQube
+- Packaged as docker image (without daemon!) using Google Jib
+- Browser testing with Selenium and Saucelabs (disabled account :( )
+- Static Code Analysis with SonarQube (disabled account :( )
 - Manual Approval/Promotion
-- Blue/Green (zero downtime) Deployments with Cloud Foundry.
+- Canary deployment to Kubernetes cluster using Vamp.io Release Orchestration policies.
 
 [![CircleCI](https://circleci.com/gh/eddiewebb/demo-blueskygreenbuilds.svg?style=svg)](https://circleci.com/gh/eddiewebb/demo-blueskygreenbuilds)
 [![Maintainability](https://api.codeclimate.com/v1/badges/4c9bacea44f3d3993256/maintainability)](https://codeclimate.com/github/eddiewebb/demo-blueskygreenbuilds/maintainability)
