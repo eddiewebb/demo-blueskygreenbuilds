@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-node
-  namespace: bsgb
+  namespace: eddie
   labels:
     app: hello-node
     version: 0.0.3
