@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: blueskygreenbuilds-${FINAL_VERSION}
-  namespace: bsgb
+  namespace: eddie
   labels:
     app: blueskygreenbuilds
     version: "${FINAL_VERSION}" #must be string to successfully convert to json read by kubectl.
