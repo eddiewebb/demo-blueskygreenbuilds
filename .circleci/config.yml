@@ -207,7 +207,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - run: sudo apt-get update && sudo apt-get install gettext-base
+      - run: sudo apt-get update && sudo apt-get install gettext-base graphviz
       - run: 
           name: Update image & version in manifest
           command: |
