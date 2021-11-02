@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blueskygreenbuilds-1.0.370
+  namespace: eddie
+  labels:
+    app: blueskygreenbuilds
+    version: "1.0.370" #must be string to successfully convert to json read by kubectl.
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: blueskygreenbuilds
+      version: "1.0.370"
+  template:
+    metadata:
+      labels:
+        app: blueskygreenbuilds
+        version: "1.0.370"
+    spec:
+      containers:
+      - name: blueskygreenbuilds
+        imagePullPolicy: Always
+        image: "eddiewebb/blueskygreenbuilds-demo:b370" #quoted since it contains colon
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /build-info
+            port: http
+            scheme: HTTP
+          failureThreshold: 1
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            memory: 128Mi
+        
