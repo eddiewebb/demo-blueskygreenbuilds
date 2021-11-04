@@ -228,7 +228,10 @@ jobs:
       - kubernetes/create-or-update-resource:
           namespace: eddie
           resource-file-path: modified-deployment.yaml
-          get-rollout-status: true
+          #Copy pasta gross
+          #get-rollout-status: true
+          #resource-name: "deployment/blueskygreenbuilds-1.0.<<pipeline.number>>"
+      - run: kubectl rollout status -f modified-deployment.yaml
       - run:
           name: Capture Contour routes as DAG
           command: |
