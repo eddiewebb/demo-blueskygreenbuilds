@@ -228,6 +228,7 @@ jobs:
       - kubernetes/create-or-update-resource:
           namespace: eddie
           resource-file-path: modified-deployment.yaml
+          get-rollout-status: true
       - run:
           name: Capture Contour routes as DAG
           command: |
