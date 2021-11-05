@@ -6,6 +6,8 @@ metadata:
   labels:
     app: blueskygreenbuilds
     version: "${FINAL_VERSION}" #must be string to successfully convert to json read by kubectl.
+  annotations:
+    prometheus.io/scrape: 'true'
 spec:
   replicas: 2
   selector:
