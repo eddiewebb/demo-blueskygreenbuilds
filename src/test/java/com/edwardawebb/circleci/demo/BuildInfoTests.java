@@ -43,7 +43,10 @@ public class BuildInfoTests {
 
     private void validateGetter(PropertyDescriptor pd, BuildInfo buildInfo) {
         String value = UUID.randomUUID().toString();
-        if(pd.getName().equals(WORKFLOW_URL_NAME)){
+        if(pd.getName().equals("podInfo")){
+            System.out.println("skip pod info");
+            return;
+        }else if(pd.getName().equals(WORKFLOW_URL_NAME)){
             System.out.println("--> no write, expecting modified value from workflowGuid");
             value = BuildInfo.CCI_URL_PREFIX + buildInfo.getWorkflowGuid();
         }else if(pd.getName().equals(GITHUB_URL_NAME)){
