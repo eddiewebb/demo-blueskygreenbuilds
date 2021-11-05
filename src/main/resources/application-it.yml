@@ -1,0 +1,13 @@
+build:
+  number: 99
+  user: eddiewebb
+  repo: demo-repo
+
+
+commit.hash: 1234abcdef
+circle.workflow.guid: 1234
+
+
+sauce.platform: Windows 10
+sauce.version: 57.0
+sauce.browser: chrome

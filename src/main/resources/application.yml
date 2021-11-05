@@ -1,0 +1,14 @@
+server.port: ${PORT:8080}
+#dumb but necessary as of soem recent spring versiion...
+spring.profiles.active: @spring.profiles.active@ 
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
