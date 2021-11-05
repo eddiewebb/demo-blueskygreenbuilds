@@ -13,3 +13,4 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+    web.server.request.autotime.percentiles: ".50,.95"
