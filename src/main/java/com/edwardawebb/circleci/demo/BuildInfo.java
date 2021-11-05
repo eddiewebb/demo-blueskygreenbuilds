@@ -84,8 +84,6 @@ public class BuildInfo {
         this.buildNum = buildNum;
     }
 
-
-
     public String getPodInfo(){
         return podName + "@" + instance_ip;
     }
