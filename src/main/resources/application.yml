@@ -1,7 +1,8 @@
 server.port: ${PORT:8080}
 #dumb but necessary as of soem recent spring versiion...
-spring.profiles.active: @spring.profiles.active@ 
-
+spring:
+  profiles.active: @spring.profiles.active@ 
+  application.name: blueskygreenbuilds
 
 
 management:
