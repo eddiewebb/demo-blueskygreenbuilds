@@ -35,16 +35,17 @@ spec:
             memory: 512Mi
           requests:
             memory: 128Mi
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: blueskygreenbuilds-${FINAL_VERSION}-service-monitor
-spec:
-  selector:
-    matchLabels:
-      #vamp creates an service per deployment
-      app: vamp-blueskygreenbuilds-${FINAL_VERSION}
-  endpoints:
-  - port: port-0
-    path: "/actuator/prometheus"
+# Need to deploy prometheis operator...
+# ---
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   name: blueskygreenbuilds-${FINAL_VERSION}-service-monitor
+# spec:
+#   selector:
+#     matchLabels:
+#       #vamp creates an service per deployment
+#       app: vamp-blueskygreenbuilds-${FINAL_VERSION}
+#   endpoints:
+#   - port: port-0
+#     path: "/actuator/prometheus"
