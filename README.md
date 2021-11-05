@@ -19,25 +19,26 @@ To test simple UI functionality we're using Spring Boot's test starter and Sauce
 
 You can see these simple tests in [HomePagesTests.java](src/test/java/com/edwardawebb/circleci/demo/it/HomePageIT.java)
 
-## Deploying on Cloud Foundry
-One of my favorite features of CF is the **zero-downtime** deployments using [Blue/Green strategy](https://martinfowler.com/bliki/BlueGreenDeployment.html).
+## Release Orchestration example 
+We can use a PaaS/FaaS cluster and canary or blue/green releases for **zero-downtime** deployments using [Blue/Green strategy](https://martinfowler.com/bliki/BlueGreenDeployment.html).
 
-1. Push new version of app on a 'dark' URL not used by customers
-1. Validate application health on dark URL
-1. Begin routing customer facing URL to new version
-1. Stop sending customer traffic to old version
-1. Stop and remove previous version
+1. deploy new version of service as container image (i.e. in dockerhub, ecr, etc)
+1. Rollout new image to XX% of traffice, or by cohort
+1. Monitor key metrics like heatlh and activity to determine validity of new version
+1. Automatically fail or proceed rollout.
 
 
-![CloudFoundry panel showing blue and green version on unique routes](src/main/resources/static/images/bluegreen.png)
-
-You can see this executed in [config.yml](.circleci/config.yml#L107)
-
-#### Viewing
+### Viewing
 And live app visible on http://blueskygreenbuilds.com
 
+### Interesting Things
 
+- We're using a service account in CircleCI to apply the deployment
+- Traffic is shaped via contour as influence by Vamp policies
+- We grab a [visual of the routes from contour](https://app.circleci.com/pipelines/github/eddiewebb/demo-blueskygreenbuilds/389/workflows/b164a140-8b2b-4ade-9f44-2a9814d3c017/jobs/2513/artifacts_) and save  as artifact in build 
+- Spring Boot app is exosing an API that prometheus scrape, which can drive specific policy metrics.
 
+![A completed release with healthy metrics](demo-assets/vamp-release.png)
 
 ## Running locally
 
