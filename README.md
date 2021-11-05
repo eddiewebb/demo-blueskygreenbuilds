@@ -36,7 +36,7 @@ And live app visible on http://blueskygreenbuilds.com
 - We're using a service account in CircleCI to apply the deployment
 - Traffic is shaped via contour as influence by Vamp policies
 - We grab a [visual of the routes from contour](https://app.circleci.com/pipelines/github/eddiewebb/demo-blueskygreenbuilds/389/workflows/b164a140-8b2b-4ade-9f44-2a9814d3c017/jobs/2513/artifacts_) and save  as artifact in build 
-- Spring Boot app is exosing an API that prometheus scrape, which can drive specific policy metrics.
+- Spring Boot app is exposing a [metrics API](http://blueskygreenbuilds.com/actuator/metrics/visit_counter) that prometheus scrape, which can drive custom policy metrics. 
 
 ![A completed release with healthy metrics](demo-assets/vamp-release.png)
 
