@@ -21,6 +21,12 @@ public class BuildInfo {
     @Value("${circle.workflow.guid}")
     private String workflowGuid;
 
+    @Value("${MY_POD_NAME}")
+    private String podName;
+
+    @Value("${MY_POD_IP}")
+    private String instance_ip;
+
 
     protected static final String CCI_URL_PREFIX ="https://circleci.com/workflow-run/";
     protected static final String GH_URL_FORMAT ="https://github.com/%s/%s/commit/%s";
@@ -79,6 +85,10 @@ public class BuildInfo {
     }
 
 
+
+    public String getPodInfo(){
+        return podName + "@" + instance_ip;
+    }
 
     protected String formatGithubUrl(String user, String repo, String commitHash){
         return String.format(GH_URL_FORMAT, user, repo, commitHash);
