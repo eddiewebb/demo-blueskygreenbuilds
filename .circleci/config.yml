@@ -85,6 +85,7 @@ workflows:
 
   #default workflow runs on pushes.
   build_deploy:
+    unless: << pipeline.parameters.cleanup >>
     jobs:
       - unit-test:
           context: Production-Only  #we'll see this is caught by nightly auditor as invalid.
@@ -285,11 +286,10 @@ jobs:
       
       - run: |
           kubectl -neddie delete deployment blueskygreenbuilds-<<pipeline.parameters.version>>
-          kubectl -neddie rollout status deployment/blueskygreenbuilds-<<pipeline.parameters.version>>
       - run:
           name: Capture Contour routes as DAG
           command: |
-            sleep 5 
+            sleep 2 
             # let release agent catch deploy, tell contour to shape traffic. 
             # must be a smarter way
             vamp/get-dag-as-dot.sh
