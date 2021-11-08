@@ -274,6 +274,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - run: sudo apt-get update && sudo apt-get install graphviz
       - kubernetes/install-kubectl
       - run:
           name: Create minimal kubeconfig for Service Account
