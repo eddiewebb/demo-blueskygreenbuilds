@@ -30,7 +30,7 @@ def main():
     commentTestFailure()
     commitLocalChangeAgainstIssue(branch,issue,"Fixes issue #" + str(issue['number']) + ", tests passing.")
     print("PR: " + pr['html_url'] + " will be closed if still open")
-    input("Press enter to checkout latest from master (reset)")
+    input("Press enter to checkout latest from main (reset)")
     mergePullRequestIfOpen(pr)
     revertToKnownCleanState()
 
@@ -43,7 +43,7 @@ def revertToKnownCleanState():
     closeAllGithubeIssues()
 
     # revert test_case
-    call(['git','checkout','master'])
+    call(['git','checkout','main'])
     call(['git','pull'])
     call(['git','checkout',starting_hash,'--',test_case])
     call(['git','commit','-am','"Revert test cases to passing state [skip ci]"'])
@@ -114,7 +114,7 @@ def openPullRequestAgainstBranch(branch_name, issue):
     pull_request={
         'title':'Merge ' + branch_name + ' into production stream',
         'head':branch_name,
-        'base':'master',
+        'base':'main',
         'body':'Please review and merge changes for Issue #' +str(issue['number'])
     }
     r = requests.post(base_url+'/pulls',json=pull_request,auth=auth)
