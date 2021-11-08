@@ -73,10 +73,10 @@ workflows:
           cron: "0 0 * * *"
           filters:
             branches:
-              only: [master]
+              only: [main]
     jobs:
       - build-auditor/check_context_usage:
-          production-branch: master
+          production-branch: main
   the-fixer:
     when: << pipeline.parameters.cleanup >>
     jobs:
@@ -96,19 +96,19 @@ workflows:
             - unit-test
           filters:
             branches:
-              only: master
+              only: main
       - package-docker:
           requires:
             - unit-test
           filters:
             branches:
-              only: master
+              only: main
       - update-deployment:
           requires:
             - package-docker
           filters:
             branches:
-              only: master
+              only: main
 
 
 jobs:
