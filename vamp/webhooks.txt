@@ -1,0 +1,33 @@
+Add these webhooks to Vamp
+
+
+### Success
+We will delete prior version
+
+Type: CCC
+Path: /VCS/Org/Project "/github/eddiewebb/demo-blueskygreenbuilds"
+Payload: depends on your config, but should  have a boolean to trigger gated workflow and minam version variables.
+
+```
+{
+    "branch":"main",
+    "parameters":{
+        "cleanup":true,
+        "version":"%%SOURCE_SERVICE_VERSION%%"
+    }
+}
+```
+
+### Failure
+
+Same except we delete the TARGET version
+
+```
+{
+    "branch":"main",
+    "parameters":{
+        "cleanup":true,
+        "version":"%%TARGET_SERVICE_VERSION%%"
+    }
+}
+```
