@@ -27,7 +27,8 @@ Same except we delete the TARGET version
     "branch":"main",
     "parameters":{
         "cleanup":true,
-        "version":"%%TARGET_SERVICE_VERSION%%"
+        "version":"%%TARGET_SERVICE_VERSION%%",
+        "job_name":"ROLLBACK failed release"
     }
 }
 ```
