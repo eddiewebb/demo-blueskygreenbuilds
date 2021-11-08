@@ -81,7 +81,7 @@ workflows:
     when: << pipeline.parameters.cleanup >>
     jobs:
       - delete-deployment:
-          name: << pipeline.parameters.job_name >> (<<pipelines.parameters.version>>)
+          name: << pipeline.parameters.job_name >> (<<pipeline.parameters.version >>)
 
   #default workflow runs on pushes.
   build_deploy:
