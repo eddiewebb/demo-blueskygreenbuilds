@@ -273,6 +273,7 @@ jobs:
       - image: cimg/base:edge-18.04
     working_directory: ~/repo
     steps:
+      - checkout
       - kubernetes/install-kubectl
       - run:
           name: Create minimal kubeconfig for Service Account
