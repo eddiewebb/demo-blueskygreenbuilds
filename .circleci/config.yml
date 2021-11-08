@@ -11,7 +11,7 @@ parameters:
     description: the version (latest or prior) to be deleted
   job_name:
     type: string
-    default: remove previous deployment
+    default: delete deployment
 
 
 orbs:
@@ -81,7 +81,7 @@ workflows:
     when: << pipeline.parameters.cleanup >>
     jobs:
       - delete-deployment:
-          name: << pipeline.parameters.job_name >> (<<pipeline.parameters.version >>)
+          name: << pipeline.parameters.job_name >>
 
   #default workflow runs on pushes.
   build_deploy:
