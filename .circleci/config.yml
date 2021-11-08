@@ -81,7 +81,7 @@ workflows:
     when: << pipeline.parameters.cleanup >>
     jobs:
       - delete-deployment:
-          name: << pipeline.parameters.job_name >>
+          name: << pipeline.parameters.job_name >> (<<pipelines.parameters.version>>)
 
   #default workflow runs on pushes.
   build_deploy:
@@ -286,8 +286,9 @@ jobs:
             kubectl config set-context cci --user=eddies-bot --namespace=eddie --cluster=se-demo-eks-VlSWt4Kt
             kubectl config use-context cci
       
-      - run: |
-          kubectl -neddie delete deployment blueskygreenbuilds-<<pipeline.parameters.version>>
+      - run:
+          name: Delete deployment << pipeline.parameters.version >>
+          command: kubectl -neddie delete deployment blueskygreenbuilds-<<pipeline.parameters.version>>
       - run:
           name: Capture Contour routes as DAG
           command: |
