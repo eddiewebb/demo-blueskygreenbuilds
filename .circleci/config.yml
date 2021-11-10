@@ -257,7 +257,7 @@ jobs:
       - run:
           name: Capture Contour routes as DAG
           command: |
-            sleep 5 
+            sleep 10 
             # let release agent catch deploy, tell contour to shape traffic. 
             # must be a smarter way
             vamp/get-dag-as-dot.sh
