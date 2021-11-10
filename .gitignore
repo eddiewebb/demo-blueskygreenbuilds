@@ -27,3 +27,7 @@ target/
 Pipfile Pipfile.lock
 Pipfile*
 coverage/
+
+
+### Slides reveal.js ###
+node_modules

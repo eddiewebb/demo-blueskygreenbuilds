@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>reveal.js</title>
+
+	<link rel="stylesheet" href="dist/reset.css">
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/black.css">
+
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/monokai.css">
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+
+			<!-- Slides are separated by three dashes (the default) -->
+			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$" data-separator-notes="Note:$">
+				# Release Orchestration 
+				### for Fun and Profit
+
+				A brief intro to Vamp's current capabilities.
+			
+				Note:
+				Here is speaker notes
+				
+			</section>
+
+			<!-- Slides are separated by regexp matching newline + three dashes + newline, vertical slides identical but two dashes -->
+			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$" data-separator-notes="Note:$">
+				<script type="text/template">
+					## The story
+					A basic web-app (web service) is built, tested, and published from CircleCI onto a k8s cluster where it is monitored against a Release Policy defined in Vamp.
+
+					--
+
+					- We separate `release` from `deployment`
+					- A _passing_ pipeline in CircleCI is decoupled from a _healthy_ application in the wild
+					- Vamp release agent monitors deployments and controls ingress Policy regardless of trigger
+
+				</script>
+			</section>
+			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$" data-separator-notes="Note:$">
+				<script type="text/template">
+					
+					## The Tech
+
+					Spring-boot app on k8s with contour ingress.
+
+					--
+
+					- Java web app with Spring Boot, JDK 17, built with Maven 3.x
+					- Dockerized with Google Jib (daemonless)
+					- Deployed to k8s cluster in AWS EKS
+					- With a non-admin K8s Service Account
+					- Cluster using Contour ingress and Prometheus Monitoring
+
+				</script>
+			</section>
+			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+				<script type="text/template">
+					## The Toys
+
+					To demonstrate the load balancing, metrics and other attributes, the sample app & cluster have some demo candy.
+
+					--
+
+					- [custom domain](http://blueskygreenbuilds.com) routes to AWS ELB
+					- Exposing custom metrics @ [`/actuator`](http://blueskygreenbuilds.com/actuator) including JMX, traces and prometheus summary
+					- Exposing build & pod info on a [`/build-info`](http://blueskygreenbuilds.com/build-info) endpoint
+					- Webhooks in Vamp trigger conditional cleanup workflow in CCI
+					- Contour exposes a .png of routing 
+					- We can browse prometheus from local using port tunneling
+
+					--
+
+					### Build info
+
+					Talk to governance, traceability, debuggability and fun with load balancers.  Each running instance exposes version and instance info.
+
+					![json output showing version, IP, workflow ID and commit hash](assets/buildinfo.png)
+					
+					--
+
+					### Load balancers?!
+					Well, ingress controllers technically, but yeah!
+
+					The config your define in Vamp configures the Contour ingress controller behind your domain. 
+					This means during deployment we can see the version (buildnum) bounce back and forth as we reload.
+
+					![dag of Contour ingress paths](assets/contouringress.png)
+
+				</script>
+			</section>
+			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+				# Fin
+			</section>
+
+		</div>
+	</div>
+
+	<script src="dist/reveal.js"></script>
+	<script src="plugin/notes/notes.js"></script>
+	<script src="plugin/markdown/markdown.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+	<script>
+		// More info about initialization & config:
+		// - https://revealjs.com/initialization/
+		// - https://revealjs.com/config/
+		Reveal.initialize({
+			hash: true,
+
+			// Learn about plugins: https://revealjs.com/plugins/
+			plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+
+			// The "normal" size of the presentation, aspect ratio will
+			// be preserved when the presentation is scaled to fit different
+			// resolutions. Can be specified using percentage units.
+			width: 960,
+			height: 700,
+
+			// Factor of the display size that should remain empty around
+			// the content
+			margin: 0.04,
+
+			// Bounds for smallest/largest possible scale to apply to content
+			minScale: 0.1,
+			maxScale: 2.0
+		});
+	</script>
+</body>
+
+</html>
