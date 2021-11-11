@@ -33,17 +33,85 @@
 
 			<!-- Slides are separated by regexp matching newline + three dashes + newline, vertical slides identical but two dashes -->
 			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$" data-separator-notes="Note:$">
-				<script type="text/template">
-					## The story
-					A basic web-app (web service) is built, tested, and published from CircleCI onto a k8s cluster where it is monitored against a Release Policy defined in Vamp.
+				## The story
+				A basic service is built, tested, and published from CircleCI onto a k8s cluster where it is monitored against a Release Policy defined in Vamp.
 
-					--
 
-					- We separate `release` from `deployment`
-					- A _passing_ pipeline in CircleCI is decoupled from a _healthy_ application in the wild
-					- Vamp release agent monitors deployments and controls ingress Policy regardless of trigger
+				- We separate `release` from `publish`
+				- A _passing_ pipeline in CircleCI is not the same as a _healthy_ application in the wild
+					- Invalid config, inadequate scale, integration issues, etc.
 
-				</script>
+				--
+
+				## Traditional CCI Story
+				- Developer commits code
+				- Fix breaking change in unit - fast feedback, optmizations
+				- Concurrent packaging of docker while IT tests run
+				- Deploy versioned image to docker hub
+				- Apply deployment to K8s cluster. 
+
+				![circleci workflow with build, package, apply workflow](assets/cci_workflow.png)
+
+				--
+
+				### But ah Snap!
+				
+				The service selector in the manifest was bogus, and our beautiful little container is shutoff from the world.
+
+				Users are getting angry error pages!
+
+				![githubs 503 unicorn](assets/gh_angry.png)
+
+				--
+
+				### Adding Release Monitoring 
+				- Release agent detects deployment by CCI, Argo, or sun gods (by matching labels [app, version])
+				- Vamp agent monitors metrics from prometheus based on defined metric queries
+				- At end of policy Vamp determines if thresholds were met and moves forward, or fails deployment
+				- Webhook is fired with details
+				- Admins get paged and fix stuff.
+
+				![alerts and metrics image](assets/alerts.png)
+
+				
+
+				--
+
+				### Adding Traffic Shaping
+				- Release agent also applies new ingress policy controlling traffic (10% canacy, 90% stable)
+				- Vamp agent monitors metrics from prometheus based on defined metric queries
+				- At end of policy Vamp determines if thresholds were met and increases rollout, or fails the `release`
+				- Webhook is fired with details
+
+
+				![alerts and metrics image](assets/canary.png)
+
+
+
+				--
+
+				### So What?
+				- If the application restarts too much  OR
+				- Does not respond in time OR
+				- Throws too many errors while it does OR
+				- X OR X OR x
+
+				Then reset ingress to "Stable" version, and fire webhooks
+
+				- operators don't get pages
+				- only a few customers ever notice
+				- dev team can keep iterating
+
+				--
+
+				## Webhooks, WHY?
+				- Vamp handles ingress & scale based on policies that shape ingress, 
+				- but leaves the deployment itself out there (unrouted)
+				- Webhooks on Success to:
+					- approve CCI apporval job
+					- trigger parametized pipeline
+				- On failure:
+					- call CCI to cleanup bad deployment. 
 			</section>
 			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$" data-separator-notes="Note:$">
 				<script type="text/template">
@@ -61,6 +129,53 @@
 					- Cluster using Contour ingress and Prometheus Monitoring
 
 				</script>
+			</section>
+			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+				# Vamp Deep Dive
+
+				Walkthrough the Vamp agent, applications, policies, etc
+
+				--
+
+				## Vamp Release agent
+
+				Firstly, there is not direct trigger or API call to vamp. 
+				
+				With the Vamp release agent we essentially hand ingress control to Vamp.  The cluster installed binary communicates with Vamp Cloud to shape traffic based on detected deployments.
+
+				![visual of vamp agent on network](assets/vampoverview.png)
+
+				--
+
+				## Vamp - Application
+
+				An *Application* represents the tuple of (Cluster, Namespace, Ingress) 
+
+				You may think of Application as more of a Platform - it is not a specific web-service, UI, or function, but rather everything available behind a single domain.
+
+				[BlueSKyGreenBuild App in Vamp](https://vamp.cloud/6/application/211/0)
+
+				--
+
+				## Vamp - Services
+
+				A *Service* reprsents an individual web service or application running as a deployment, responsing on a specific path, and many may live in an Application
+
+				https://vamp.cloud/6/application/211/0/services
+
+				--
+
+				## Vamp - Policies & Metrics
+
+				Metrics are queries against prometheus essnetially.
+
+				Policies are which metrics (beyond required health & availability) are used over a fixed time or request volume to assess validity of change.
+				- 90% of responses < 500ms
+				- 1,000 requests/min of traffic
+				- No more than 2 restarts
+
+				https://vamp.cloud/6/policy/66/steps
+
 			</section>
 			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
 				<script type="text/template">
@@ -97,6 +212,17 @@
 
 				</script>
 			</section>
+
+			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+				# Cool Let's Play
+
+
+				https://app.circleci.com/pipelines/github/eddiewebb/demo-blueskygreenbuilds?branch=main
+
+
+
+			</section>
+
 			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
 				# Fin
 			</section>
@@ -121,16 +247,18 @@
 			// The "normal" size of the presentation, aspect ratio will
 			// be preserved when the presentation is scaled to fit different
 			// resolutions. Can be specified using percentage units.
-			width: 960,
-			height: 700,
+			width: "100%",
+			height: "100%",
 
 			// Factor of the display size that should remain empty around
 			// the content
 			margin: 0.04,
 
 			// Bounds for smallest/largest possible scale to apply to content
-			minScale: 0.1,
-			maxScale: 2.0
+			//minScale: 0.1,
+			//maxScale: 1.0,
+
+			center: false
 		});
 	</script>
 </body>
