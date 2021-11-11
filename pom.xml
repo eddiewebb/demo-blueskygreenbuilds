@@ -87,7 +87,9 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
-	</dependencies>
+	
+ 
+ </dependencies>
 
 	<build>
 		<plugins>
@@ -150,6 +152,15 @@
 							<port>8080</port>
 						</ports>
 					</container>
+					<extraDirectories>
+						<paths>
+							<!-- Copies from 'docs' into '/' on the container. -->
+							<path>
+								<from>docs</from>
+								<into>/docs</into>
+							</path>
+						</paths>
+					</extraDirectories>
 				</configuration>
 			</plugin>
 			<plugin>
