@@ -158,6 +158,7 @@
 							<path>
 								<from>docs</from>
 								<into>/docs</into>
+								<excludes>node_modules/**</excludes>
 							</path>
 						</paths>
 					</extraDirectories>
