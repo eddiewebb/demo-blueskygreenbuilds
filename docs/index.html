@@ -115,18 +115,85 @@
 			</section>
 			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$" data-separator-notes="Note:$">
 				<script type="text/template">
-					
+					<!-- .slide: data-background-image="assets/dogs.jpeg" -->
 					## The Tech
 
-					Spring-boot app on k8s with contour ingress.
-
-					--
+					Java app, in a container, on a cluster, at night.
 
 					- Java web app with Spring Boot, JDK 17, built with Maven 3.x
 					- Dockerized with Google Jib (daemonless)
 					- Deployed to k8s cluster in AWS EKS
 					- With a non-admin K8s Service Account
 					- Cluster using Contour ingress and Prometheus Monitoring
+
+
+					--
+
+					## Jib - Container Images for Java Apps
+					
+					Build OCI images without docker Daemon.  
+					Maven and Gradle plugins integrate to existing tool stack.
+
+					```yaml [7|8|9-13]
+					package-docker:
+						docker:
+						- image: cimg/openjdk:17.0-browsers
+						- run:
+							name: Package Docker image with Jib
+							command: |
+								./mvnw compile jib:build \
+								-B -DskipTests=true \
+								-Dbuild.number=<<pipeline.number>> \
+								-Dcommit.hash=${CIRCLE_SHA1} \
+								-Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
+								-Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+								-Dbuild.repo=${CIRCLE_PROJECT_REPONAME} 
+					```
+
+					--
+
+					## Build Info (with Maven)
+					
+					We capture environment info and pass it to maven at build time. We can expose this later from our running container!
+
+					```xml [3,10-14]
+					<configuration>
+						<to>
+							<image>registry.hub.docker.com/eddiewebb/blueskygreenbuilds-demo:b${build.number}</image>
+						</to>
+						<from>
+							<image>openjdk:17-alpine</image>
+						</from>
+						<container>
+							<jvmFlags>
+								<jvmFlag>-Dbuild.number=${build.number}</jvmFlag>
+								<jvmFlag>-Dcommit.hash=${commit.hash}</jvmFlag>
+								<jvmFlag>-Dbuild.user=${build.user}</jvmFlag>
+								<jvmFlag>-Dbuild.repo=${build.repo}</jvmFlag>
+								<jvmFlag>-Dcircle.workflow.guid=${circle.workflow.guid}</jvmFlag>
+							</jvmFlags>
+						</container>
+					```
+					
+					--
+
+					## K8s cluster on EKS
+
+					- Using ELB domain pointing to cluster
+					- Contour handles ELB connections, routing to right service
+					- CircleCI uses a Service Account to access the cluster 
+
+					```bash [2-4|1|6|5|7-8|9]
+					echo ${SERVER_CERT_CA} | base64 -d > ca.crt
+					kubectl config set-cluster se-demo-eks-VlSWt4Kt \
+					  --server=https://k8s-api-host.tld \
+					  --certificate-authority=ca.crt
+					export DECODED_TOKEN=$(echo ${SE_DEMO_CLUSTER_CCI_USER_TOKEN} | base64 -d)
+					kubectl config set-credentials eddies-bot --token=${DECODED_TOKEN}
+					kubectl config set-context cci --user=eddies-bot --namespace=eddie --cluster=se-demo-eks-VlSWt4Kt
+					kubectl config use-context cci
+					# see vamp/make-service-account.sh
+					```
 
 				</script>
 			</section>
