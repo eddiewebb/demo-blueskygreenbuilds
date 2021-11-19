@@ -34,13 +34,17 @@
 			<!-- Slides are separated by regexp matching newline + three dashes + newline, vertical slides identical but two dashes -->
 			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$" data-separator-notes="Note:$">
 				## The story
-				A basic service is built, tested, and published from CircleCI onto a k8s cluster where it is monitored against a Release Policy defined in Vamp.
 
+				- A basic web-service is built, tested, and deployed to users.
+				
+				- The service is one of many dozens or hundreds of microservices working in cooperation (think netflix)
+				
+				- A single team owns only a handful of services.
+				
+				(Modern teams using cloud native architecture on k8s platform)
 
-				- We separate `release` from `publish`
-				- A _passing_ pipeline in CircleCI is not the same as a _healthy_ application in the wild
-					- Invalid config, inadequate scale, integration issues, etc.
-
+				![netflix UI mocked up wiot potential service boundaries](assets/netflix.png)
+				
 				--
 
 				## Traditional CCI Story
@@ -66,8 +70,8 @@
 
 				### Adding Release Monitoring 
 				- Release agent detects deployment by CCI, Argo, or sun gods (by matching labels [app, version])
-				- Vamp agent monitors metrics from prometheus based on defined metric queries
-				- At end of policy Vamp determines if thresholds were met and moves forward, or fails deployment
+				- Release agent monitors metrics from prometheus based on defined metric queries
+				- At end of policy time-limit determine if thresholds were met and moves forward, or fails deployment
 				- Webhook is fired with details
 				- Admins get paged and fix stuff.
 
@@ -104,7 +108,7 @@
 
 				--
 
-				## Webhooks, WHY?
+				## Webhooks, WHY DO WE NEED EM?
 				- Vamp handles ingress & scale based on policies that shape ingress, 
 				- but leaves the deployment itself out there (unrouted)
 				- Webhooks on Success to:
@@ -112,19 +116,36 @@
 					- trigger parametized pipeline
 				- On failure:
 					- call CCI to cleanup bad deployment. 
+
+				--
+
+				## Recap
+
+				- Traditional approach was "hope our non-prod testing was adequate"
+					- A _passing_ pipeline in CircleCI is not the same as a _healthy_ application in the wild
+						- Invalid config, inadequate scale, integration issues, etc.
+
+				- Modern approach "Ensure our non-prod testing was adequate"
+					- We separate `deploy/publish` from `release`
+					- We can incrementally expose or rollback new versions
+				
+				--
+				
+				![tired, wired, inspired meme with CI,CD and RO](assets/releasethinking.jpeg)
+
 			</section>
 			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$" data-separator-notes="Note:$">
 				<script type="text/template">
-					<!-- .slide: data-background-image="assets/dogs.jpeg" -->
+					<!-- .slide: data-background-image="assets/dogs.jpeg" style="color:white;text-shadow: 0 0 8px #000;" -->
 					## The Tech
 
-					Java app, in a container, on a cluster, at night.
+					Java app, in a container, on a cluster ( at night.)<!-- .element: style="color:white;text-shadow: 1 1 3px #000;" -->
 
-					- Java web app with Spring Boot, JDK 17, built with Maven 3.x
-					- Dockerized with Google Jib (daemonless)
-					- Deployed to k8s cluster in AWS EKS
-					- With a non-admin K8s Service Account
-					- Cluster using Contour ingress and Prometheus Monitoring
+					- Java web app with Spring Boot, JDK 17, built with Maven 3.x<!-- .element: style="color:white;text-shadow: 1 1 3px #000;" -->
+					- Dockerized with Google Jib (daemonless)<!-- .element: style="color:white;text-shadow: 1 1 3px #000;" -->
+					- Deployed to k8s cluster in AWS EKS<!-- .element: style="color:white;text-shadow: 1 1 3px #000;" -->
+					- With a non-admin K8s Service Account<!-- .element: style="color:white;text-shadow: 1 1 3px #000;" -->
+					- Cluster using Contour ingress and Prometheus Monitoring<!-- .element: style="color:white;text-shadow: 1 1 3px #000;" -->
 
 
 					--
@@ -246,7 +267,7 @@
 			</section>
 			<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
 				<script type="text/template">
-					## The Toys
+					## The Toys (Demo sugar)
 
 					To demonstrate the load balancing, metrics and other attributes, the sample app & cluster have some demo candy.
 
