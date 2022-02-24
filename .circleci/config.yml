@@ -87,8 +87,6 @@ workflows:
   build_deploy:
     unless: << pipeline.parameters.cleanup >>
     jobs:
-      - delete-deployment:
-          name: cleanup
       - unit-test:
           context: Production-Only  #we'll see this is caught by nightly auditor as invalid.
       - sum-coverage:
