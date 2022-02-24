@@ -281,7 +281,7 @@ jobs:
       - checkout
       - run: sudo apt-get update && sudo apt-get install graphviz
       - kubernetes/install-kubectl
-      - kubectl-config/configure:
+      - config:
           cluster_name: se-demo-eks-VlSWt4Kt
           namespace: eddie
           user_name: eddies_bot
