@@ -239,7 +239,7 @@ jobs:
             cat modified-deployment.yaml
       - kubernetes/install-kubectl
       - kubectl-config/configure:
-          cluster-name: se-demo-eks-VlSWt4Kt
+          cluster_name: se-demo-eks-VlSWt4Kt
           namespace: eddie
           user_name: eddies_bot
           token: SE_DEMO_CLUSTER_CCI_USER_TOKEN
@@ -278,7 +278,7 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install graphviz
       - kubernetes/install-kubectl
       - kubectl-config/configure:
-          cluster-name: se-demo-eks-VlSWt4Kt
+          cluster_name: se-demo-eks-VlSWt4Kt
           namespace: eddie
           user_name: eddies_bot
           token: SE_DEMO_CLUSTER_CCI_USER_TOKEN
