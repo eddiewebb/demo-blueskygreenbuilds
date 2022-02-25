@@ -74,10 +74,7 @@ workflows:
   build_deploy:
     unless: << pipeline.parameters.cleanup >>
     jobs:
-      - package-jar:
-      - package-docker:
-          requires:
-            - unit-test
+      - package-docker
       - update-deployment:
           requires:
             - package-docker
