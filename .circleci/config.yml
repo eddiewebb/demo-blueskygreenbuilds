@@ -88,15 +88,9 @@ workflows:
       - package-docker:
           requires:
             - unit-test
-          filters:
-            branches:
-              only: main
       - update-deployment:
           requires:
             - package-docker
-          filters:
-            branches:
-              only: main
 
 
 jobs:
