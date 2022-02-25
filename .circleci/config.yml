@@ -74,17 +74,7 @@ workflows:
   build_deploy:
     unless: << pipeline.parameters.cleanup >>
     jobs:
-      - unit-test:
-          context: Production-Only  #we'll see this is caught by nightly auditor as invalid.
-      - sum-coverage:
-          requires:
-            - unit-test
       - package-jar:
-          requires:
-            - unit-test
-          filters:
-            branches:
-              only: main
       - package-docker:
           requires:
             - unit-test
