@@ -236,8 +236,12 @@ jobs:
             cat contour-dag.dot
       - store_artifacts:
           path: contour-dag.png
+      - run:
+          name: mock continuation config
+          command: |
+            cat .circleci/config.yml | sed 's/setup: true/setup: false/' > gogo.yml
       - continuation/continue:
-          configuration_path: .circleci/config.yml
+          configuration_path: gogo.yml
           parameters: '{"cleanup":true, "version":"1.0.<<pipeline.number>>", "job_name":"Rollback FAILED release 1.0.<<pipeline.number>>"}'
 
 
