@@ -78,7 +78,11 @@ workflows:
       - update-deployment:
           requires:
             - package-docker
-
+  the-fixer:
+    when: << pipeline.parameters.cleanup >>
+    jobs:
+      - delete-deployment:
+          name: << pipeline.parameters.job_name >>
 
 jobs:
   unit-test:
