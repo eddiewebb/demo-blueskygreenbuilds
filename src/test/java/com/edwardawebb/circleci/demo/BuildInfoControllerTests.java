@@ -1,13 +1,13 @@
 package com.edwardawebb.circleci.demo;
 
 import com.edwardawebb.circleci.demo.controllers.RestController;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import static org.apache.commons.lang3.Validate.notNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.fail;
 
 public class BuildInfoControllerTests {
 
