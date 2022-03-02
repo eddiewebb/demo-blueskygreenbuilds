@@ -74,10 +74,29 @@ workflows:
   build_deploy:
     unless: << pipeline.parameters.cleanup >>
     jobs:
-      - package-docker
+      - unit-test:
+          context: Production-Only  #we'll see this is caught by nightly auditor as invalid.
+      - sum-coverage:
+          requires:
+            - unit-test
+      - package-jar:
+          requires:
+            - unit-test
+          filters:
+            branches:
+              only: main
+      - package-docker:
+          requires:
+            - unit-test
+          filters:
+            branches:
+              only: main
       - update-deployment:
           requires:
             - package-docker
+          filters:
+            branches:
+              only: main
   the-fixer:
     when: << pipeline.parameters.cleanup >>
     jobs:
@@ -240,13 +259,13 @@ jobs:
             cat contour-dag.dot
       - store_artifacts:
           path: contour-dag.png
-      - run:
-          name: mock continuation config
-          command: |
-            cat .circleci/config.yml | sed 's/setup: true/setup: false/' > gogo.yml
-      - continuation/continue:
-          configuration_path: gogo.yml
-          parameters: '{"cleanup":true, "version":"1.0.<<pipeline.number>>", "job_name":"Rollback FAILED release 1.0.<<pipeline.number>>"}'
+      #- run:
+      #    name: mock continuation config
+      #    command: |
+      #      cat .circleci/config.yml | sed 's/setup: true/setup: false/' > gogo.yml
+      #- continuation/continue:
+      #    configuration_path: gogo.yml
+      #    parameters: '{"cleanup":true, "version":"1.0.<<pipeline.number>>", "job_name":"Rollback FAILED release 1.0.<<pipeline.number>>"}'
 
 
   delete-deployment:
@@ -285,6 +304,7 @@ jobs:
       SE_DEMO_CLUSTER_CCI_URL: "https://0DF7EA1E2D47EA3057B39C107F4DEADF.gr7.us-east-2.eks.amazonaws.com"
 
 commands:
+    # only here till Ryan fixes the kubectl orb
     config:
       parameters:
         token:
