@@ -1,6 +1,5 @@
 package com.edwardawebb.circleci.demo;
 
-import org.junit.Test;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -8,10 +7,12 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import org.junit.jupiter.api.Test;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class BuildInfoTests {
 

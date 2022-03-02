@@ -1,6 +1,6 @@
 package com.edwardawebb.circleci.demo;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *  This class has slow tests, and if timing is working, should get a dedicated node while circleci gives all other classes to parrallel node.

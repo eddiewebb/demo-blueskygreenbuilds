@@ -11,7 +11,7 @@ circle.workflow.guid: 1234
 sauce.platform: Windows 10
 sauce.version: 57.0
 sauce.browser: chrome
-
+sauce.tunnel: default
 
 MY_POD_NAME: local
 MY_POD_IP: 127.0.0.1

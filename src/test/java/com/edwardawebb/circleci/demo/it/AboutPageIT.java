@@ -1,6 +1,6 @@
 package com.edwardawebb.circleci.demo.it;
 
-import org.junit.Test;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 
 import static org.hamcrest.MatcherAssert.assertThat;
