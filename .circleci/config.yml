@@ -96,7 +96,7 @@ workflows:
           filters:
             branches:
               only: main
-  the-fixer:
+  vamp:
     when: << pipeline.parameters.cleanup >>
     jobs:
       - delete-deployment:
@@ -231,6 +231,7 @@ jobs:
           command: |
             export FINAL_VERSION=1.0.<<pipeline.number>> #vamp wants semantic version
             export FINAL_IMAGE=eddiewebb/blueskygreenbuilds-demo:b<<pipeline.number>>
+            export CIRCLE_PIPELINE_NUM=<<pipeline.number>>
             envsubst < src/main/resources/deployment/k8s-manifest.yaml > modified-deployment.yaml
             cat modified-deployment.yaml
       - kubernetes/install-kubectl
